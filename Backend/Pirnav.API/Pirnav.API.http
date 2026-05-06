@@ -1,0 +1,6 @@
+@Pirnav.API_HostAddress = http://localhost:5127
+
+GET {{Pirnav.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

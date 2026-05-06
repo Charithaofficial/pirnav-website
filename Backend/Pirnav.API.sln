@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pirnav.API", "Pirnav.API\Pirnav.API.csproj", "{737DB5B0-71BB-4BB9-BE0C-E7F44BEBAC65}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{737DB5B0-71BB-4BB9-BE0C-E7F44BEBAC65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{737DB5B0-71BB-4BB9-BE0C-E7F44BEBAC65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{737DB5B0-71BB-4BB9-BE0C-E7F44BEBAC65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{737DB5B0-71BB-4BB9-BE0C-E7F44BEBAC65}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C834CF56-33C6-43D9-8B17-4983A4C95010}
+	EndGlobalSection
+EndGlobal

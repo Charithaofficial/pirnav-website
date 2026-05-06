@@ -1,0 +1,16 @@
+.git
+.sixth
+**/.env
+**/.env.*
+!**/.env.example
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/*.user
+**/*.suo
+PIRNAV-PROJECT/Backend/**/appsettings*.json
+PIRNAV-PROJECT/Backend/**/wwwroot/resumes/
+PIRNAV-PROJECT/Backend/**/wwwroot/uploads/

@@ -1,0 +1,79 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f8fa;
+  color: #163340;
+}
+
+body {
+  min-width: 320px;
+  line-height: 1.5;
+}
+
+:root {
+  --theme-primary: #0b7286;
+  --theme-primary-dark: #074c59;
+  --theme-accent: #69c7d3;
+  --theme-surface: #ffffff;
+  --theme-surface-soft: #eef7f8;
+  --theme-border: rgba(11, 114, 134, 0.14);
+  --theme-heading: #122b35;
+  --theme-text: #36515f;
+  --theme-text-muted: #5f7581;
+  --theme-shadow: 0 24px 48px rgba(16, 49, 58, 0.12);
+  --shadow-soft: 0 18px 36px rgba(16, 49, 58, 0.1);
+  --page-shell: min(1240px, calc(100% - 2rem));
+  --navbar-offset: clamp(2.5rem, 5vw, 3.25rem);
+  --dashboard-hero-height: clamp(24rem, 75vh, 34rem);
+  --chat-safe-space: clamp(5.5rem, 11vw, 7.5rem);
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+body.nav-menu-open {
+  overflow: hidden;
+}
+
+main,
+section,
+article,
+div {
+  min-width: 0;
+}
