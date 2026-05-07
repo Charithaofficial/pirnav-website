@@ -30,7 +30,7 @@
   overflow: hidden;
   min-height: var(--dashboard-hero-height, clamp(24rem, 75vh, 34rem));
   box-sizing: border-box;
-  padding: 200px 6vw 150px;
+  padding: 200px 6vw 126px;
   background:
     linear-gradient(122deg, rgba(7, 20, 39, 0.95), rgba(12, 60, 102, 0.84)),
     url("/images/itsolutions.jpg") center/cover;

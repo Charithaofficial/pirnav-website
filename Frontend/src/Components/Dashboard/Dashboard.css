@@ -1,3 +1,15 @@
+.hero-container,
+.cta-section,
+.about-section,
+.approach-section,
+.tech-strip-section,
+.dashboard-services-section,
+.blog-preview-section,
+.counter-section {
+  --dashboard-page-gutter: clamp(1.25rem, 6vw, 5rem);
+  --dashboard-content-width: 80rem;
+}
+
 .hero-container {
   min-height: var(--dashboard-hero-height, clamp(24rem, 75vh, 34rem));
   position: relative;
@@ -41,8 +53,8 @@
   min-height: var(--dashboard-hero-height, clamp(24rem, 75vh, 34rem));
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 4.75rem clamp(1.25rem, 6vw, 5rem) 3.25rem;
+  justify-content: flex-start;
+  padding: 4.75rem var(--dashboard-page-gutter) 3.25rem;
   width: 100%;
   background-repeat: no-repeat;
   background-position: center center;
@@ -87,13 +99,6 @@
   text-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 
-@media (min-width: 1500px) {
-  .hero-content {
-    align-items: center !important;
-    margin: 0 auto;
-    text-align: center;
-  }
-}
 .slide::before {
   content: "";
   position: absolute;
@@ -1110,6 +1115,10 @@
   padding:26px 10px 0;
 }
 
+.approach-step:first-child{
+  padding-left:0;
+}
+
 .approach-step::after{
   content:"";
   position:absolute;
@@ -1144,6 +1153,10 @@
   justify-content:center;
   text-align:center;
   padding:26px 20px;
+}
+
+.approach-step:first-child .approach-circle{
+  margin-left:0;
 }
 
 .approach-icon{
@@ -2899,28 +2912,43 @@ transform:translate(0) scale(1);
   white-space: normal;
 }
 
-.footer-grid,
 .cta-container,
+.about-heading,
 .about-container,
+.approach-wrapper,
 .counter-shell,
 .blog-preview-shell,
 .dashboard-services-shell,
 .tech-strip-shell {
-  width: min(100%, 80rem);
+  width: min(100%, var(--dashboard-content-width));
   max-width: 100%;
   box-sizing: border-box;
   margin-inline: auto;
 }
 
-.footer-grid,
-.cta-container,
-.about-container,
-.counter-shell {
-  padding-inline: clamp(1rem, 2.5vw, 1.5rem);
+.slide,
+.cta-section,
+.about-section,
+.approach-section,
+.tech-strip-section,
+.dashboard-services-section,
+.blog-preview-section,
+.counter-section {
+  padding-inline: var(--dashboard-page-gutter);
 }
 
-.footer-bottom {
-  padding-inline: clamp(1rem, 2.5vw, 1.5rem);
+.about-heading,
+.about-container,
+.approach-wrapper,
+.counter-shell,
+.blog-preview-shell,
+.dashboard-services-shell,
+.tech-strip-shell {
+  padding-inline: 0;
+}
+
+.about-images {
+  padding-left: 0;
 }
 
 @media (max-width: 900px) {

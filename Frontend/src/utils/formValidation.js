@@ -14,6 +14,16 @@ const companyPattern = /^[A-Za-z0-9][A-Za-z0-9 &'().,\-/]*$/;
 
 const trimValue = (value = "") => value.trim();
 const textTokenPattern = /[A-Za-z0-9]+/g;
+const repeatedSingleCharacterPattern = /^([A-Za-z0-9])\1+$/;
+
+const isRepeatedSingleCharacterText = (value = "") => {
+  const condensed = value.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
+
+  return condensed.length >= 3 && repeatedSingleCharacterPattern.test(condensed);
+};
+
+const isRepeatedLetterToken = (token = "") =>
+  token.length >= 3 && /^([A-Za-z])\1+$/i.test(token);
 
 const hasMeaningfulText = (value = "", minimumWords = 1) => {
   const trimmed = trimValue(value);
@@ -22,8 +32,15 @@ const hasMeaningfulText = (value = "", minimumWords = 1) => {
   const tokensWithVowels = letterTokens.filter((token) => /[aeiou]/i.test(token));
   const longLetterTokens = letterTokens.filter((token) => token.length >= 3);
   const obviousKeyboardMash = /^(qwerty|asdf|zxcv|poiuy|lkjh|mnbv|abc(?:def)?|test)+$/i;
+  const allLetterTokensAreRepeated =
+    letterTokens.length > 0 && letterTokens.every(isRepeatedLetterToken);
 
-  if (!trimmed || obviousKeyboardMash.test(trimmed.replace(/\s+/g, ""))) {
+  if (
+    !trimmed ||
+    isRepeatedSingleCharacterText(trimmed) ||
+    allLetterTokensAreRepeated ||
+    obviousKeyboardMash.test(trimmed.replace(/\s+/g, ""))
+  ) {
     return false;
   }
 
@@ -45,6 +62,7 @@ export const validateName = (value = "") => {
     !trimmed ||
     trimmed.length < LIMITS.nameMin ||
     trimmed.length > LIMITS.nameMax ||
+    isRepeatedSingleCharacterText(trimmed) ||
     !namePattern.test(trimmed)
   ) {
     return "Enter a valid name";

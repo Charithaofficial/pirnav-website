@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaComments, FaPaperPlane, FaRobot, FaTimes } from "react-icons/fa";
 import "./ChatWidget.css";
 import { buildApiUrl, jsonApiHeaders } from "../../config/api";
+import { validateName } from "../../utils/formValidation";
 
 const CHAT_API = buildApiUrl("Chat");
 const SESSION_STORAGE_KEY = "pirnav-chat-session-id";
@@ -90,6 +91,16 @@ const parseChatResponse = async (response) => {
   } catch {
     return { reply: rawText };
   }
+};
+
+const isNameStep = (step, messages) => {
+  const normalizedStep = String(step || "").toLowerCase();
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant")
+    ?.text?.toLowerCase() || "";
+
+  return normalizedStep.includes("name") || lastAssistantMessage.includes("your name");
 };
 
 function ChatWidget() {
@@ -203,10 +214,33 @@ function ChatWidget() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const trimmedInput = chatInput.trim();
 
     if (currentStep === "done") {
       initializeChat();
       return;
+    }
+
+    if (!trimmedInput) {
+      return;
+    }
+
+    if (isNameStep(currentStep, chatMessages)) {
+      const nameError = validateName(trimmedInput);
+
+      if (nameError) {
+        setChatMessages((current) => [
+          ...current,
+          { id: Date.now(), role: "user", text: trimmedInput },
+          {
+            id: Date.now() + 1,
+            role: "assistant",
+            text: "Please enter a valid name with at least 2 letters.",
+          },
+        ]);
+        setChatInput("");
+        return;
+      }
     }
 
     requestChatReply(chatInput);

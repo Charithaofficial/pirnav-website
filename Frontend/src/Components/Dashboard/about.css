@@ -13,7 +13,7 @@ body {
 
 .about-hero-banner {
   position: relative;
-  min-height: var(--dashboard-hero-height, clamp(24rem, 75vh, 34rem));
+  min-height: var(--dashboard-hero-height, clamp(30rem, 400vh, 30rem));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -24,7 +24,7 @@ body {
   min-height: var(--dashboard-hero-height, clamp(24rem, 75vh, 34rem));
   display: flex;
   align-items: center;
-  padding: 60px 56px 52px;
+  padding: 60px 56px 38px;
   background:
     linear-gradient(100deg, rgba(4, 21, 34, 0.88) 0%, rgba(10, 45, 60, 0.74) 46%, rgba(12, 52, 70, 0.34) 100%),
     radial-gradient(circle at right center, rgba(123, 211, 224, 0.16), transparent 26%);

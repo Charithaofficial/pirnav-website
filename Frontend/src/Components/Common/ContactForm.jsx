@@ -55,7 +55,13 @@ function ContactForm({
   };
 
   const handleChange = (event) => {
-    updateField(event.target.name, event.target.value);
+    const { name, value } = event.target;
+
+    updateField(name, value);
+
+    if (name === "name" && value.trim().length >= 3) {
+      setTouched((current) => ({ ...current, name: true }));
+    }
   };
 
   const handleBlur = (event) => {
