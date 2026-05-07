@@ -1,25 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function ServicePageTemplate({ service }) {
   return (
     <div className="service-page">
       <section className="service-page__hero service-page__section-shell">
         <div className="service-page__hero-copy">
-          <span className="service-page__eyebrow">
-            {service.eyebrow || "Technology Service"}
-          </span>
-
-          <div className="service-page__breadcrumb" aria-label="Breadcrumb">
-            <Link to="/">Home</Link>
-            <span>/</span>
-            <Link to="/services">Services</Link>
-            <span>/</span>
-            <span>{service.breadcrumbLabel || service.title}</span>
-          </div>
-
           <h1>{service.title}</h1>
-          <p>{service.description}</p>
+          <p className="service-page__hero-intro">{service.description}</p>
         </div>
 
         <div className="service-page__hero-media">
