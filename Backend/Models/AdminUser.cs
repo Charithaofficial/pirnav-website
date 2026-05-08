@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pirnav.API.Models;
 
-[Table("adminusers")]
+[Table("AdminUsers")]
 public partial class AdminUser
 {
     public int Id { get; set; }
@@ -19,5 +19,5 @@ public partial class AdminUser
 
     public string? Email { get; set; }
 
-    //public string? ProfileImage { get; set; }
+    //public string? PhoneNumber { get; set; }
 }

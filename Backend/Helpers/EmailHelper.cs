@@ -4,9 +4,6 @@
     {
         public static bool IsBlockedDomain(string email)
         {
-            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
-                return true;
-
             var blockedDomains = new List<string>
             {
                 "mailinator.com",
@@ -28,10 +25,12 @@
 
             var spamKeywords = new List<string>
     {
+        "seo",
         "crypto",
         "loan",
         "casino",
         "investment",
+        "marketing",
         "promotion",
         "backlinks"
     };

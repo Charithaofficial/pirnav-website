@@ -53,12 +53,7 @@ namespace Pirnav.API.Controllers
     ? "User"
     : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(model.Name.ToLower());
 
-            var publicBaseUrl = _config["PublicBaseUrl"]?.TrimEnd('/');
-            var logoUrl =
-                _config["Branding:LogoUrl"] ??
-                (string.IsNullOrWhiteSpace(publicBaseUrl)
-                    ? "https://pirnav.com/images/pirnav-logo.png"
-                    : $"{publicBaseUrl}/images/pirnav-logo.png");
+            var logoUrl = "https://pirnav.com/images/pirnav_logo.png";
 
             // ================= COMMON HEADER =================
             var header = $@"
@@ -121,25 +116,10 @@ Regards,<br/>
 </div>
 </div>";
 
-            var notificationEmails = new[]
-                {
-                    _config["EmailSettings:ContactEmail"],
-                    _config["EmailSettings:HrEmail"]
-                }
-                .Where(email => !string.IsNullOrWhiteSpace(email))
-                .Select(email => email!.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var hrEmail in notificationEmails)
+            var hrEmail = _config["EmailSettings:HrEmail"];
+            if (!string.IsNullOrEmpty(hrEmail))
             {
-                try
-                {
-                    await _emailService.SendEmailAsync(hrEmail, hrSubject, hrBody);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Contact notification email failed for {hrEmail}: {ex}");
-                }
+                await _emailService.SendEmailAsync(hrEmail, hrSubject, hrBody);
             }
 
             // ================= USER EMAIL =================
@@ -195,16 +175,9 @@ Warm regards,<br/>
 </div>
 </div>";
 
-            if (!string.IsNullOrWhiteSpace(model.Email))
+            if (!string.IsNullOrEmpty(model.Email))
             {
-                try
-                {
-                    await _emailService.SendEmailAsync(model.Email.Trim(), userSubject, userBody);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Contact acknowledgement email failed for {model.Email}: {ex}");
-                }
+                await _emailService.SendEmailAsync(model.Email, userSubject, userBody);
             }
 
             return Ok(new
@@ -268,25 +241,6 @@ Warm regards,<br/>
             {
                 success = true,
                 message = "Marked as read"
-            });
-        }
-
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("mark-replied/{id}")]
-        public IActionResult MarkAsReplied(int id)
-        {
-            var message = _context.ContactMessages.Find(id);
-
-            if (message == null)
-                return NotFound(new { message = "Message not found" });
-
-            message.Status = "Replied";
-            _context.SaveChanges();
-
-            return Ok(new
-            {
-                success = true,
-                message = "Marked as replied"
             });
         }
 

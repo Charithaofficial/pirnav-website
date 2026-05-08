@@ -17,22 +17,19 @@ namespace Pirnav.API.Controllers
         private readonly EmailService _emailService;
         private readonly JobApplicationService _jobApplicationService;
         private readonly FileUploadService _fileUploadService;
-        private readonly IConfiguration _config;
 
         public JobApplicationsController(
             AppDbContext context,
             IWebHostEnvironment environment,
             EmailService emailService,
             JobApplicationService jobApplicationService,
-            FileUploadService fileUploadService,
-            IConfiguration config)
+            FileUploadService fileUploadService)
         {
             _context = context;
             _environment = environment;
             _emailService = emailService;
             _jobApplicationService = jobApplicationService;
             _fileUploadService = fileUploadService;
-            _config = config;
         }
 
         // ================= APPLY JOB =================
@@ -119,11 +116,10 @@ Email: hr.admin@pirnav.com
 </div>";
 
             // ===== HR EMAIL =====
-            var hrEmail = _config["EmailSettings:HrEmail"];
-            if (!string.IsNullOrWhiteSpace(hrEmail))
+            try
             {
                 await _emailService.SendEmailAsync(
-                    hrEmail,
+                    "hr.admin@pirnav.com",
                     "New Job Application Received",
                     $@"
 <div style='background:#f4f6f8;padding:30px'>
@@ -147,9 +143,10 @@ Email: hr.admin@pirnav.com
 </div>"
                 );
             }
+            catch { }
 
             // ===== CANDIDATE EMAIL =====
-            if (!string.IsNullOrWhiteSpace(application.Email))
+            try
             {
                 await _emailService.SendEmailAsync(
                     application.Email,
@@ -182,6 +179,7 @@ We appreciate your interest in joining our team.
 </div>"
                 );
             }
+            catch { }
 
             // ================= EMAIL LOGIC END =================
 
@@ -265,15 +263,11 @@ We appreciate your interest in joining our team.
             if (application == null)
                 return NotFound(new { message = "Application not found" });
 
-            var normalizedStatus = string.Equals(request.Status, "shortlisted", StringComparison.OrdinalIgnoreCase)
-                ? "Shortlisted"
-                : request.Status;
-
-            application.Status = normalizedStatus;
+            application.Status = request.Status;
 
             // ================= SHORTLIST EMAIL =================
 
-            if (string.Equals(normalizedStatus, "Shortlisted", StringComparison.OrdinalIgnoreCase))
+            if (request.Status?.Trim().ToLower() == "shortlisted")
             {
                 var logoUrl = "https://pirnav.com/images/pirnav_logo.png";
 

@@ -31,16 +31,16 @@ public partial class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<AdminUser>().ToTable("adminusers");
-modelBuilder.Entity<ContactMessage>().ToTable("contactmessages");
-modelBuilder.Entity<Job>().ToTable("jobs");
-modelBuilder.Entity<JobApplication>().ToTable("jobapplications");
-modelBuilder.Entity<Service>().ToTable("services");
-modelBuilder.Entity<Interview>().ToTable("interviews");
-modelBuilder.Entity<Manager>().ToTable("managers");
-modelBuilder.Entity<Lead>().ToTable("leads");
-modelBuilder.Entity<DemoRequest>().ToTable("demorequests");
-modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
+        modelBuilder.Entity<AdminUser>().ToTable("AdminUsers");
+        modelBuilder.Entity<ContactMessage>().ToTable("ContactMessages");
+        modelBuilder.Entity<Job>().ToTable("Jobs");
+        modelBuilder.Entity<JobApplication>().ToTable("JobApplications");
+        modelBuilder.Entity<Service>().ToTable("Services");
+        modelBuilder.Entity<Interview>().ToTable("Interviews");
+        modelBuilder.Entity<Manager>().ToTable("Managers");
+        modelBuilder.Entity<Lead>().ToTable("Leads");
+        modelBuilder.Entity<DemoRequest>().ToTable("DemoRequests");
+        modelBuilder.Entity<InterviewFeedback>().ToTable("InterviewFeedbacks");
         // =======================
         // ADMIN USERS
         // =======================
@@ -55,7 +55,7 @@ modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
 
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("(getdate())");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         // =======================
@@ -71,7 +71,7 @@ modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
 
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("(getdate())");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         // =======================
@@ -83,7 +83,7 @@ modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
 
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("(getdate())");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.Property(e => e.IsActive)
                 .HasDefaultValue(true);
@@ -115,7 +115,7 @@ modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
 
             entity.Property(e => e.AppliedDate)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("(getdate())");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             entity.HasIndex(e => new { e.JobId, e.Email })
                 .IsUnique();
@@ -141,7 +141,7 @@ modelBuilder.Entity<InterviewFeedback>().ToTable("interviewfeedbacks");
 
             entity.Property(e => e.CreatedDate)
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("(getdate())");
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
         // =======================

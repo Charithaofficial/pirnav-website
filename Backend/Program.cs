@@ -22,26 +22,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+        ServerVersion.AutoDetect(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+        )
     ));
-
-builder.Services.AddScoped<ChatService>();
-
-// =======================
-// CORS CONFIGURATION
-// =======================
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll",
-//        policy =>
-//        {
-//            policy.AllowAnyOrigin()
-//                  .AllowAnyMethod()
-//                  .AllowAnyHeader();
-//        });
-//});
-
 
 // =======================
 // CORS CONFIGURATION
@@ -52,11 +36,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:5173",
-                "https://localhost:5173",
-                "https://breath-kelp-skipping.ngrok-free.dev"
-            )
+            .SetIsOriginAllowed(_ => true)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -68,32 +48,39 @@ builder.Services.AddCors(options =>
 // =======================
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
 var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
 
 builder.Services
-.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-
-    options.TokenValidationParameters = new TokenValidationParameters
+    .AddAuthentication(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true,
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
 
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
 
-        IssuerSigningKey = new SymmetricSecurityKey(key)
-    };
-});
+        options.SaveToken = true;
+
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(key)
+            };
+    });
 
 builder.Services.AddAuthorization();
 
@@ -106,16 +93,24 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("jobApplyLimiter", opt =>
     {
         opt.PermitLimit = 5;
+
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+
+        opt.QueueProcessingOrder =
+            QueueProcessingOrder.OldestFirst;
+
         opt.QueueLimit = 2;
     });
 
     options.AddFixedWindowLimiter("contactLimiter", opt =>
     {
-        opt.PermitLimit = 3; 
+        opt.PermitLimit = 3;
+
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+
+        opt.QueueProcessingOrder =
+            QueueProcessingOrder.OldestFirst;
+
         opt.QueueLimit = 1;
     });
 
@@ -129,25 +124,34 @@ builder.Services.AddRateLimiter(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddFluentValidationAutoValidation();
+
 builder.Services.AddValidatorsFromAssemblyContaining<AdminRegisterValidator>();
+
 builder.Services.AddValidatorsFromAssemblyContaining<ContactValidator>();
 
 // =======================
 // SERVICES
 // =======================
 
+builder.Services.AddScoped<ChatService>();
+
 builder.Services.AddScoped<EmailService>();
+
 builder.Services.AddScoped<JobApplicationService>();
+
 builder.Services.AddScoped<FileUploadService>();
 
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddHttpClient<EmsService>(client =>
 {
-    client.BaseAddress = new Uri("https://marian-undeported-shanon.ngrok-free.dev/");
+    client.BaseAddress =
+        new Uri("https://marian-undeported-shanon.ngrok-free.dev/");
 });
 
-
+// =======================
+// API VALIDATION RESPONSE
+// =======================
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -168,9 +172,6 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     };
 });
 
-
-
-
 // =======================
 // SWAGGER + JWT SUPPORT
 // =======================
@@ -185,30 +186,32 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT Token: Bearer {your_token}"
-    });
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    options.AddSecurityDefinition("Bearer",
+        new OpenApiSecurityScheme
         {
-            new OpenApiSecurityScheme
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter JWT Token: Bearer {your_token}"
+        });
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
 });
 
 // =======================
@@ -218,86 +221,33 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // =======================
-// AUTO SEED ADMIN
-// =======================
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-   // DbSeeder.Seed(services);
-}
-
-// =======================
 // MIDDLEWARE PIPELINE
 // =======================
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");   
+// IMPORTANT
+// CORS MUST COME BEFORE AUTHENTICATION
 
-app.UseMiddleware<ExceptionMiddleware>(); 
-
-app.UseRateLimiter();
+app.UseCors("AllowAll");
 
 app.UseStaticFiles();
 
+app.UseRateLimiter();
+
+// TEMPORARILY DISABLED
+// TO AVOID BLOCKING OPTIONS REQUESTS
+
+// app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
-//app.Use(async (context, next) =>
-//{
-//    context.Response.Headers["Access-Control-Allow-Origin"] = "*";
-//    context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
-//    context.Response.Headers["Access-Control-Allow-Headers"] = "*";
-
-//    if (context.Request.Method == "OPTIONS")
-//    {
-//        context.Response.StatusCode = 200;
-//        await context.Response.CompleteAsync();
-//        return;
-//    }
-
-//    await next();
-//});
-
-app.MapGet("/", () =>
-{
-    if (app.Environment.IsDevelopment())
-    {
-        return Results.Redirect("/swagger");
-    }
-
-    return Results.Ok(new
-    {
-        name = "Pirnav API",
-        status = "Running"
-    });
-});
-
 app.MapControllers();
-
-app.Lifetime.ApplicationStarted.Register(() =>
-{
-    var urls = app.Urls.Count > 0 ? app.Urls : new[] { "http://localhost:5000" };
-
-    Console.WriteLine();
-    Console.WriteLine("Pirnav API is running:");
-
-    foreach (var url in urls)
-    {
-        Console.WriteLine($"  API: {url}");
-
-        if (app.Environment.IsDevelopment())
-        {
-            Console.WriteLine($"  Swagger: {url.TrimEnd('/')}/swagger");
-        }
-    }
-});
 
 app.Run();

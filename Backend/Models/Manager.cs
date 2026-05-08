@@ -1,6 +1,14 @@
-﻿public class Manager
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Pirnav.API.Models
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
+    [Table("Managers")]
+    public class Manager
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Email { get; set; }
+    }
 }

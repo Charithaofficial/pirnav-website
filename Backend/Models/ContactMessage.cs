@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("contactmessages")]
+[Table("ContactMessages")]
 public class ContactMessage
 {
     public int Id { get; set; }

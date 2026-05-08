@@ -1,5 +1,7 @@
-﻿using Pirnav.API.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Pirnav.API.Models;
 
+[Table("Jobs")]
 public partial class Job
 {
     public int Id { get; set; }
@@ -26,6 +28,5 @@ public partial class Job
 
     public bool? IsActive { get; set; }
 
-    
     public virtual ICollection<JobApplication> JobApplications { get; set; } = new List<JobApplication>();
 }

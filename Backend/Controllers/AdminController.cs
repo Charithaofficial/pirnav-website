@@ -191,8 +191,6 @@ namespace Pirnav.API.Controllers
 
 
 
-
-
         [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
@@ -203,10 +201,11 @@ namespace Pirnav.API.Controllers
                 .Where(x => x.Id == userId)
                 .Select(x => new
                 {
-                    id = x.Id,
+                    x.Id,
                     username = x.Username,
                     email = x.Email,
-                    role = x.Role
+                    role = x.Role,
+                   // phoneNumber = x.PhoneNumber
                 })
                 .FirstOrDefaultAsync();
 
@@ -215,6 +214,10 @@ namespace Pirnav.API.Controllers
 
             return Success("Profile fetched", admin);
         }
+
+
+
+
 
         [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPut("update-profile")]
@@ -227,44 +230,21 @@ namespace Pirnav.API.Controllers
             if (admin == null)
                 return Fail("Admin not found");
 
-            var username = dto.Username?.Trim();
-            var email = dto.Email?.Trim();
-
-            if (string.IsNullOrWhiteSpace(username))
-                return Fail("Username is required");
-
-            if (string.IsNullOrWhiteSpace(email))
-                return Fail("Email is required");
-
-            var emailExists = await _context.AdminUsers
-                .AnyAsync(x => x.Id != userId && x.Email == email);
-
-            if (emailExists)
-                return Fail("Email already registered");
-
-            var usernameExists = await _context.AdminUsers
-                .AnyAsync(x => x.Id != userId && x.Username == username);
-
-            if (usernameExists)
-                return Fail("Username already exists");
-
-            admin.Username = username;
-            admin.Email = email;
+            admin.Username = dto.Username;
+            admin.Email = dto.Email;
+            //admin.PhoneNumber = dto.PhoneNumber;
 
             await _context.SaveChangesAsync();
 
-            return Success("Profile updated successfully", new
-            {
-                id = admin.Id,
-                username = admin.Username,
-                email = admin.Email,
-                role = admin.Role
-            });
+            return Success("Profile updated successfully");
         }
+
+
+
 
         [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] AdminChangePasswordDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             var userId = GetUserId();
 
@@ -273,27 +253,18 @@ namespace Pirnav.API.Controllers
             if (admin == null)
                 return Fail("Admin not found");
 
-            if (string.IsNullOrWhiteSpace(dto.CurrentPassword) ||
-                string.IsNullOrWhiteSpace(dto.NewPassword) ||
-                string.IsNullOrWhiteSpace(dto.ConfirmPassword))
-            {
-                return Fail("All password fields are required");
-            }
-
-            if (dto.NewPassword != dto.ConfirmPassword)
-                return Fail("New password and confirm password do not match");
-
-            if (dto.NewPassword.Length < 8)
-                return Fail("New password must be at least 8 characters");
-
             if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, admin.PasswordHash))
                 return Fail("Current password is incorrect");
 
-            admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return Fail("Passwords do not match");
+
+            admin.PasswordHash =
+                BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
 
             await _context.SaveChangesAsync();
 
-            return Success("Password changed successfully");
+            return Success("Password updated successfully");
         }
 
 
@@ -301,60 +272,9 @@ namespace Pirnav.API.Controllers
 
 
 
-        ////[Authorize(Roles = "Admin,SuperAdmin")]
-        ////[HttpPost("upload-profile-photo")]
-        ////public async Task<IActionResult> UploadProfilePhoto(IFormFile file)
-        ////{
-        ////    if (file == null || file.Length == 0)
-        ////        return Fail("No file uploaded");
 
-        ////    var userId = GetUserId();
 
-        ////    var admin = await _context.AdminUsers.FindAsync(userId);
 
-        ////    if (admin == null)
-        ////        return Fail("Admin not found");
-
-        ////    var folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/profile");
-
-        ////    if (!Directory.Exists(folder))
-        ////        Directory.CreateDirectory(folder);
-
-        ////    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-        ////    var filePath = Path.Combine(folder, fileName);
-
-        ////    using (var stream = new FileStream(filePath, FileMode.Create))
-        ////    {
-        ////        await file.CopyToAsync(stream);
-        ////    }
-
-        ////    admin.ProfileImage = "/uploads/profile/" + fileName;
-
-        ////    await _context.SaveChangesAsync();
-
-        ////    return Success("Photo uploaded", new
-        ////    {
-        ////        imageUrl = admin.ProfileImage
-        ////    });
-        ////}
-
-        //[Authorize(Roles = "Admin,SuperAdmin")]
-        //[HttpDelete("remove-profile-photo")]
-        //public async Task<IActionResult> RemoveProfilePhoto()
-        //{
-        //    var userId = GetUserId();
-
-        //    var admin = await _context.AdminUsers.FindAsync(userId);
-
-        //    if (admin == null)
-        //        return Fail("Admin not found");
-
-        //    admin.ProfileImage = null;
-
-        //    await _context.SaveChangesAsync();
-
-        //    return Success("Profile photo removed");
-        //}
 
     }
 }

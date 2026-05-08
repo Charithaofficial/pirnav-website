@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pirnav.API.Models
 {
+    [Table("Leads")]
     public class Lead
     {
         public int Id { get; set; }

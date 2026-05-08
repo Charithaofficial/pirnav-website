@@ -1,5 +1,8 @@
-﻿namespace Pirnav.API.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Pirnav.API.Models
 {
+    [Table("Services")]
     public class Service
     {
         public int Id { get; set; }
