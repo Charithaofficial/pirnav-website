@@ -1,10 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Eye, Trash2 } from "lucide-react";
+import { CheckCircle2, Search, Eye, Trash2 } from "lucide-react";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
  
 const API_BASE = buildApiUrl("Contact");
+
+const normalizeList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.$values)) return data.$values;
+  if (Array.isArray(data?.messages)) return data.messages;
+  return [];
+};
+
+const normalizeStatus = (status) => String(status || "").toLowerCase();
  
 const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -44,7 +54,7 @@ const ContactMessages = () => {
       if (!headers) return;
       const res = await fetch(API_BASE, { headers });
       const data = await res.json();
-      setMessages(Array.isArray(data) ? data : []);
+      setMessages(normalizeList(data));
     } catch (err) {
       console.error("Load error", err);
     } finally {
@@ -73,7 +83,7 @@ const ContactMessages = () => {
       const data = await res.json();
       setSelected(data);
  
-      if (data.status === "Unread") {
+      if (normalizeStatus(data.status) === "unread") {
         await fetch(`${API_BASE}/mark-read/${id}`, {
           method: "PUT",
           headers,
@@ -90,10 +100,13 @@ const ContactMessages = () => {
     try {
       const headers = getHeaders();
       if (!headers) return;
-      await fetch(`${API_BASE}/mark-replied/${id}`, {
+      const response = await fetch(`${API_BASE}/mark-replied/${id}`, {
         method: "PUT",
         headers,
       });
+      if (!response.ok) {
+        throw new Error("Unable to mark message as replied.");
+      }
       await fetchMessages();
       await fetchUnreadCount();
       setSelected(null);
@@ -124,7 +137,7 @@ const ContactMessages = () => {
       m.email?.toLowerCase().includes(search.toLowerCase()) ||
       m.subject?.toLowerCase().includes(search.toLowerCase());
 
-    const normalizedStatus = (m.status || "").toLowerCase();
+    const normalizedStatus = normalizeStatus(m.status);
     const matchesStatus =
       statusFilter === "all" || normalizedStatus === statusFilter;
 
@@ -170,6 +183,7 @@ const ContactMessages = () => {
           <option value="all">All</option>
           <option value="read">Read</option>
           <option value="unread">Unread</option>
+          <option value="replied">Replied</option>
         </select>
       </div>
  
@@ -196,8 +210,8 @@ const ContactMessages = () => {
 </td>
               <td>{msg.subject}</td>
               <td>
-<span className={`status ${msg.status === "Read" ? "read" : "unread"}`}>
-                 {msg.status === "Read" ? "Read" : "Unread"}
+<span className={`status ${normalizeStatus(msg.status) === "unread" ? "unread" : "read"}`}>
+                 {normalizeStatus(msg.status) === "unread" ? "Unread" : msg.status || "Read"}
 </span>
 </td>
               <td>
@@ -232,6 +246,10 @@ const ContactMessages = () => {
 <button onClick={() => setSelected(null)}>
 Close
 </button>
+              <button className="reply-btn" onClick={() => markAsReplied(selected.id)}>
+                <CheckCircle2 size={14} />
+                Mark Replied
+              </button>
 </div>
 </div>
 </div>

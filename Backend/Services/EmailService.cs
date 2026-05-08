@@ -14,14 +14,48 @@ namespace Pirnav.API.Services
             _configuration = configuration;
         }
 
+        private string GetRequiredSetting(string key)
+        {
+            var value = _configuration[key];
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new InvalidOperationException($"Missing email configuration: {key}");
+            }
+
+            return value.Trim().Trim('"');
+        }
+
+        private SecureSocketOptions GetSecureSocketOptions(int port)
+        {
+            var configured = _configuration["EmailSettings:SecureSocketOptions"]?.Trim();
+
+            if (Enum.TryParse<SecureSocketOptions>(configured, ignoreCase: true, out var option))
+            {
+                return option;
+            }
+
+            return port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+        }
+
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
+            if (string.IsNullOrWhiteSpace(toEmail))
+            {
+                throw new ArgumentException("Recipient email is required.", nameof(toEmail));
+            }
+
+            _ = new System.Net.Mail.MailAddress(toEmail.Trim());
+
+            var senderName = GetRequiredSetting("EmailSettings:SenderName");
+            var senderEmail = GetRequiredSetting("EmailSettings:SenderEmail");
+            var password = GetRequiredSetting("EmailSettings:Password");
+            var smtpServer = GetRequiredSetting("EmailSettings:SmtpServer");
+            var port = int.Parse(GetRequiredSetting("EmailSettings:Port"));
+
             var message = new MimeMessage();
 
-            message.From.Add(new MailboxAddress(
-                _configuration["EmailSettings:SenderName"],
-                _configuration["EmailSettings:SenderEmail"]
-            ));
+            message.From.Add(new MailboxAddress(senderName, senderEmail));
 
             message.To.Add(new MailboxAddress("", toEmail.Trim()));
             message.Subject = subject;
@@ -36,15 +70,12 @@ namespace Pirnav.API.Services
             client.CheckCertificateRevocation = false;
 
             await client.ConnectAsync(
-                _configuration["EmailSettings:SmtpServer"],
-                int.Parse(_configuration["EmailSettings:Port"]),
-                SecureSocketOptions.SslOnConnect
+                smtpServer,
+                port,
+                GetSecureSocketOptions(port)
             );
 
-            await client.AuthenticateAsync(
-                _configuration["EmailSettings:SenderEmail"],
-                _configuration["EmailSettings:Password"]
-            );
+            await client.AuthenticateAsync(senderEmail, password);
 
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
@@ -58,12 +89,22 @@ namespace Pirnav.API.Services
     string body,
     string filePath)
         {
+            if (string.IsNullOrWhiteSpace(toEmail))
+            {
+                throw new ArgumentException("Recipient email is required.", nameof(toEmail));
+            }
+
+            _ = new System.Net.Mail.MailAddress(toEmail.Trim());
+
+            var senderName = GetRequiredSetting("EmailSettings:SenderName");
+            var senderEmail = GetRequiredSetting("EmailSettings:SenderEmail");
+            var password = GetRequiredSetting("EmailSettings:Password");
+            var smtpServer = GetRequiredSetting("EmailSettings:SmtpServer");
+            var port = int.Parse(GetRequiredSetting("EmailSettings:Port"));
+
             var message = new MimeMessage();
 
-            message.From.Add(new MailboxAddress(
-                _configuration["EmailSettings:SenderName"],
-                _configuration["EmailSettings:SenderEmail"]
-            ));
+            message.From.Add(new MailboxAddress(senderName, senderEmail));
 
             message.To.Add(new MailboxAddress("", toEmail.Trim()));
             message.Subject = subject;
@@ -85,15 +126,12 @@ namespace Pirnav.API.Services
             client.CheckCertificateRevocation = false;
 
             await client.ConnectAsync(
-                _configuration["EmailSettings:SmtpServer"],
-                int.Parse(_configuration["EmailSettings:Port"]),
-                SecureSocketOptions.SslOnConnect
+                smtpServer,
+                port,
+                GetSecureSocketOptions(port)
             );
 
-            await client.AuthenticateAsync(
-                _configuration["EmailSettings:SenderEmail"],
-                _configuration["EmailSettings:Password"]
-            );
+            await client.AuthenticateAsync(senderEmail, password);
 
             await client.SendAsync(message);
             await client.DisconnectAsync(true);

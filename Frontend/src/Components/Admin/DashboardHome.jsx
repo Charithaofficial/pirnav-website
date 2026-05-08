@@ -147,6 +147,7 @@ const DashboardHome = () => {
 <div className="dashboard-wrapper">
 <div className="dashboard-header">
 <h1>Dashboard</h1>
+<p>Overview of your hiring activities</p>
 </div>
  
 <div className="stats-grid">

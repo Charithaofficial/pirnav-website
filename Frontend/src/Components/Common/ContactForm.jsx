@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   hasErrors,
+  LIMITS,
   sanitizeFormPayload,
   validateContactForm,
 } from "../../utils/formValidation";
@@ -146,6 +147,7 @@ function ContactForm({
               type="text"
               name="name"
               placeholder="Your name"
+              maxLength={LIMITS.nameMax}
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -160,6 +162,7 @@ function ContactForm({
               type="email"
               name="email"
               placeholder="Your email"
+              maxLength={LIMITS.emailMax}
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -175,6 +178,7 @@ function ContactForm({
             type="text"
             name="subject"
             placeholder="Subject"
+            maxLength={LIMITS.subjectMax}
             value={formData.subject}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -189,6 +193,7 @@ function ContactForm({
             name="message"
             rows="6"
             placeholder="Tell us what you need"
+            maxLength={LIMITS.messageMax}
             value={formData.message}
             onChange={handleChange}
             onBlur={handleBlur}

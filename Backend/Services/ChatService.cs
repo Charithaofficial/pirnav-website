@@ -60,6 +60,8 @@ namespace Pirnav.API.Services
                     {
                         userSteps[sessionId] = "done";
 
+                        await SendSupportNotification(message);
+
                         return new ChatResponse
                         {
                             Reply = "Our support team will contact you shortly.",
@@ -141,6 +143,26 @@ namespace Pirnav.API.Services
                 subject,
                 body
             );
+        }
+
+        private async Task SendSupportNotification(string message)
+        {
+            var supportEmail =
+                _configuration["EmailSettings:ContactEmail"] ??
+                _configuration["EmailSettings:HrEmail"];
+
+            if (string.IsNullOrWhiteSpace(supportEmail))
+            {
+                return;
+            }
+
+            var subject = "Support Request from Pirnav Chatbot";
+            var body = $@"
+        <h3>Support request received from the website chatbot</h3>
+        <p><b>Message:</b> {System.Net.WebUtility.HtmlEncode(message)}</p>
+    ";
+
+            await _emailService.SendEmailAsync(supportEmail, subject, body);
         }
     }
 }

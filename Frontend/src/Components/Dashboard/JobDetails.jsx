@@ -390,6 +390,17 @@ const JobDetails = () => {
               <h1>{job.jobTitle}</h1>
               <p>{job.jobDescription || "Step into a role built for people who move with clarity, care deeply about craft, and like turning momentum into polished work."}</p>
 
+              {splitSkills(job.keyResponsibilities || job.responsibilities).length > 0 && (
+                <div className="job-inline-responsibilities">
+                  <span className="job-inline-label">Key responsibilities</span>
+                  <ul>
+                    {splitSkills(job.keyResponsibilities || job.responsibilities).map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {splitSkills(job.mandatorySkills).length > 0 && (
                 <div className="job-inline-skills">
                   <span className="job-inline-label">Required skills</span>

@@ -53,7 +53,12 @@ namespace Pirnav.API.Controllers
     ? "User"
     : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(model.Name.ToLower());
 
-            var logoUrl = "https://pirnav.com/images/pirnav_logo.png";
+            var publicBaseUrl = _config["PublicBaseUrl"]?.TrimEnd('/');
+            var logoUrl =
+                _config["Branding:LogoUrl"] ??
+                (string.IsNullOrWhiteSpace(publicBaseUrl)
+                    ? "https://pirnav.com/images/pirnav-logo.png"
+                    : $"{publicBaseUrl}/images/pirnav-logo.png");
 
             // ================= COMMON HEADER =================
             var header = $@"
@@ -263,6 +268,25 @@ Warm regards,<br/>
             {
                 success = true,
                 message = "Marked as read"
+            });
+        }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("mark-replied/{id}")]
+        public IActionResult MarkAsReplied(int id)
+        {
+            var message = _context.ContactMessages.Find(id);
+
+            if (message == null)
+                return NotFound(new { message = "Message not found" });
+
+            message.Status = "Replied";
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                success = true,
+                message = "Marked as replied"
             });
         }
 

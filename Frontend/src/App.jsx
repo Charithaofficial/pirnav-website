@@ -32,6 +32,7 @@ import Applications from "./Components/Admin/Applications.jsx";
 import AdminUsers from "./Components/Admin/AdminUsers.jsx";
 import Interviews from "./Components/Admin/Interviews.jsx";
 import InterviewFeedback from "./Components/Admin/InterviewFeedback.jsx";
+import AdminInfoPage from "./Components/Admin/AdminInfoPage.jsx";
 
 /* Sub pages */
 import WebPage from "./Components/Services/WebPage.jsx";
@@ -113,7 +114,11 @@ function AppContent() {
             <Route path="applications" element={<Applications />} />
             <Route path="interviews" element={<Interviews />} />
             <Route path="interview-feedback" element={<InterviewFeedback />} />
+            <Route path="reports" element={<Navigate to="/admin" replace />} />
+            <Route path="settings" element={<Navigate to="/admin/users" replace />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="profile" element={<AdminInfoPage type="profile" />} />
+            <Route path="change-password" element={<AdminInfoPage type="password" />} />
           </Route>
 
         </Routes>

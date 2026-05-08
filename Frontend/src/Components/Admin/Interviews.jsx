@@ -17,6 +17,25 @@ const initialForm = {
   notes: "",
 };
 
+const getInterviewSortTime = (interview) => {
+  const dateValue =
+    interview.updatedAt ||
+    interview.modifiedAt ||
+    interview.createdAt ||
+    interview.scheduledAt ||
+    interview.interviewDate;
+  const timestamp = dateValue ? new Date(dateValue).getTime() : 0;
+
+  if (!Number.isNaN(timestamp) && timestamp > 0) {
+    return timestamp;
+  }
+
+  return Number(interview.id) || 0;
+};
+
+const sortLatestInterviews = (items = []) =>
+  [...items].sort((first, second) => getInterviewSortTime(second) - getInterviewSortTime(first));
+
 const Interviews = () => {
   const navigate = useNavigate();
   const [interviews, setInterviews] = useState([]);
@@ -26,6 +45,7 @@ const Interviews = () => {
   const [saving, setSaving] = useState(false);
   const [deleteInterview, setDeleteInterview] = useState(null);
   const [editingInterview, setEditingInterview] = useState(null);
+  const [notice, setNotice] = useState(null);
 
   const selectedCandidate = shortlistedCandidates.find(
     (candidate) => String(candidate.id) === String(form.candidateId)
@@ -53,7 +73,7 @@ const Interviews = () => {
     try {
       const res = await fetch(INTERVIEW_API, { headers: getHeaders() });
       const data = await res.json();
-      setInterviews(Array.isArray(data) ? data : data.data || []);
+      setInterviews(sortLatestInterviews(Array.isArray(data) ? data : data.data || []));
     } catch (err) {
       console.error("Interview fetch error:", err);
     }
@@ -98,6 +118,7 @@ const Interviews = () => {
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setNotice(null);
   };
 
   const resetForm = () => {
@@ -167,22 +188,22 @@ const Interviews = () => {
     event.preventDefault();
 
     if (!form.candidateId) {
-      alert("Please select candidate");
+      setNotice({ type: "error", message: "Please select candidate." });
       return;
     }
 
     if (!form.managerId) {
-      alert("Please select manager");
+      setNotice({ type: "error", message: "Please select manager." });
       return;
     }
 
     if (!form.interviewDate || !form.interviewTime) {
-      alert("Please select date and time");
+      setNotice({ type: "error", message: "Please select date and time." });
       return;
     }
 
     if (form.mode === "Online" && !form.meetingLink) {
-      alert("Meeting link required for online interview");
+      setNotice({ type: "error", message: "Meeting link required for online interview." });
       return;
     }
 
@@ -218,12 +239,17 @@ const Interviews = () => {
       );
       const result = await res.text();
       if (!res.ok) throw new Error(result);
-      alert("Interview scheduled successfully.");
+      setNotice({
+        type: "success",
+        message: editingInterview
+          ? "Interview rescheduled successfully."
+          : "Interview scheduled successfully.",
+      });
       resetForm();
-      fetchInterviews();
+      await fetchInterviews();
     } catch (err) {
       console.error("Submit error:", err);
-      alert("Error: " + err.message);
+      setNotice({ type: "error", message: `Error: ${err.message}` });
     } finally {
       setSaving(false);
     }
@@ -246,12 +272,12 @@ const Interviews = () => {
       }
 
       setInterviews((current) =>
-        current.filter((interview) => interview.id !== deleteInterview.id)
+        sortLatestInterviews(current.filter((interview) => interview.id !== deleteInterview.id))
       );
       setDeleteInterview(null);
     } catch (err) {
       console.error("Interview delete error:", err);
-      alert("Error: " + err.message);
+      setNotice({ type: "error", message: `Error: ${err.message}` });
     }
   };
 
@@ -281,6 +307,26 @@ const Interviews = () => {
           >
             Interview Workflow
           </div>
+          {notice ? (
+            <div
+              role="status"
+              style={{
+                marginTop: "12px",
+                padding: "13px 16px",
+                borderRadius: "12px",
+                background: notice.type === "success" ? "#dcfce7" : "#fee2e2",
+                border:
+                  notice.type === "success"
+                    ? "1px solid #86efac"
+                    : "1px solid #fecaca",
+                color: notice.type === "success" ? "#166534" : "#b91c1c",
+                fontWeight: 700,
+                boxShadow: "0 10px 22px rgba(15, 23, 42, 0.06)",
+              }}
+            >
+              {notice.message}
+            </div>
+          ) : null}
         </div>
 
         <div
@@ -424,7 +470,7 @@ const Interviews = () => {
               )}
 
               <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                <button type="submit" disabled={saving} style={{ flex: "1 1 220px", minHeight: "48px", border: "none", borderRadius: "14px", background: "linear-gradient(135deg, #2563eb, #38bdf8)", color: "#fff", fontWeight: 700, cursor: "pointer", boxShadow: "0 18px 30px rgba(37, 99, 235, 0.22)" }}>
+                <button type="submit" disabled={saving} style={{ flex: "1 1 220px", minHeight: "48px", border: "none", borderRadius: "14px", background: editingInterview ? "linear-gradient(135deg, #f59e0b, #facc15)" : "linear-gradient(135deg, #2563eb, #38bdf8)", color: editingInterview ? "#422006" : "#fff", fontWeight: 700, cursor: "pointer", boxShadow: editingInterview ? "0 18px 30px rgba(245, 158, 11, 0.22)" : "0 18px 30px rgba(37, 99, 235, 0.22)" }}>
                   {saving ? "Saving..." : editingInterview ? "Save Reschedule" : "Schedule Interview"}
                 </button>
                 {editingInterview ? (
@@ -473,7 +519,7 @@ const Interviews = () => {
                           {interview.status}
                         </span>
                         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                          <button type="button" onClick={() => handleRescheduleClick(interview)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "1px solid #bfdbfe", background: "#eff6ff", color: "#2563eb", fontWeight: 700, cursor: "pointer" }}>
+                          <button type="button" onClick={() => handleRescheduleClick(interview)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", minHeight: "40px", padding: "0 14px", borderRadius: "999px", border: "1px solid #fcd34d", background: "#fffbeb", color: "#b45309", fontWeight: 700, cursor: "pointer" }}>
                             <CalendarClock size={14} />
                             Reschedule
                           </button>

@@ -49,6 +49,7 @@ const initialJobForm = {
   ctc: "",
   highestQualification: "",
   jobDescription: "",
+  keyResponsibilities: "",
   mandatorySkills: "",
 };
 
@@ -61,6 +62,7 @@ const initialJobErrors = {
   ctc: "",
   highestQualification: "",
   jobDescription: "",
+  keyResponsibilities: "",
   mandatorySkills: "",
 };
 
@@ -117,6 +119,11 @@ const validateJobField = (name, value) => {
     case "jobDescription":
       if (!trimmed || trimmed.length < 30 || trimmed.length > 3000 || !hasLetters(trimmed)) {
         return "Enter a valid job description";
+      }
+      return "";
+    case "keyResponsibilities":
+      if (!trimmed || trimmed.length < 20 || trimmed.length > 3000 || !hasLetters(trimmed)) {
+        return "Enter valid key responsibilities";
       }
       return "";
     case "mandatorySkills":
@@ -259,6 +266,7 @@ const AdminJobs = () => {
       ctc: job.ctc || "",
       highestQualification: job.highestQualification || "",
       jobDescription: job.jobDescription || "",
+      keyResponsibilities: job.keyResponsibilities || job.responsibilities || "",
       mandatorySkills: job.mandatorySkills || "",
     });
     setFormErrors(initialJobErrors);
@@ -353,6 +361,8 @@ const AdminJobs = () => {
                 <p><strong>Highest Qualification:</strong> {job.highestQualification}</p>
                 <h4>Job Description</h4>
                 <p>{job.jobDescription}</p>
+                <h4>Key Responsibilities</h4>
+                <pre>{job.keyResponsibilities || job.responsibilities}</pre>
                 <h4>Mandatory Skills</h4>
                 <pre>{job.mandatorySkills}</pre>
               </div>
@@ -366,7 +376,9 @@ const AdminJobs = () => {
           <div className="modal large">
             <h3>{editingJob ? "Edit Job" : "Post New Job"}</h3>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-title">Job Title</label>
             <input
+              id="admin-job-title"
               placeholder="Job Title"
               value={form.jobTitle}
               onChange={(e) => updateField("jobTitle", e.target.value)}
@@ -376,7 +388,9 @@ const AdminJobs = () => {
             {getFieldError("jobTitle") ? <small className="admin-inline-error">{getFieldError("jobTitle")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-location">Work Location</label>
             <input
+              id="admin-job-location"
               placeholder="Work Location"
               value={form.workLocation}
               onChange={(e) => updateField("workLocation", e.target.value)}
@@ -386,7 +400,9 @@ const AdminJobs = () => {
             {getFieldError("workLocation") ? <small className="admin-inline-error">{getFieldError("workLocation")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-type">Job Type</label>
             <select
+              id="admin-job-type"
               value={form.jobType}
               onChange={(e) => updateField("jobType", e.target.value)}
               onBlur={() => handleFieldBlur("jobType")}
@@ -400,7 +416,9 @@ const AdminJobs = () => {
             {getFieldError("jobType") ? <small className="admin-inline-error">{getFieldError("jobType")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-status">Status</label>
             <select
+              id="admin-job-status"
               value={form.status}
               onChange={(e) => updateField("status", e.target.value)}
               onBlur={() => handleFieldBlur("status")}
@@ -412,7 +430,9 @@ const AdminJobs = () => {
             {getFieldError("status") ? <small className="admin-inline-error">{getFieldError("status")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-experience">Experience</label>
             <select
+              id="admin-job-experience"
               value={form.experience}
               onChange={(e) => updateField("experience", e.target.value)}
               onBlur={() => handleFieldBlur("experience")}
@@ -428,7 +448,9 @@ const AdminJobs = () => {
             {getFieldError("experience") ? <small className="admin-inline-error">{getFieldError("experience")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-ctc">CTC</label>
             <select
+              id="admin-job-ctc"
               value={form.ctc}
               onChange={(e) => updateField("ctc", e.target.value)}
               onBlur={() => handleFieldBlur("ctc")}
@@ -444,7 +466,9 @@ const AdminJobs = () => {
             {getFieldError("ctc") ? <small className="admin-inline-error">{getFieldError("ctc")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-qualification">Highest Qualification</label>
             <select
+              id="admin-job-qualification"
               value={form.highestQualification}
               onChange={(e) =>
                 updateField("highestQualification", e.target.value)
@@ -462,7 +486,9 @@ const AdminJobs = () => {
             {getFieldError("highestQualification") ? <small className="admin-inline-error">{getFieldError("highestQualification")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-description">Job Description</label>
             <textarea
+              id="admin-job-description"
               placeholder="Job Description"
               value={form.jobDescription}
               onChange={(e) => updateField("jobDescription", e.target.value)}
@@ -472,7 +498,21 @@ const AdminJobs = () => {
             {getFieldError("jobDescription") ? <small className="admin-inline-error">{getFieldError("jobDescription")}</small> : null}
             </div>
             <div className="admin-form-field">
+            <label htmlFor="admin-job-responsibilities">Key Responsibilities</label>
             <textarea
+              id="admin-job-responsibilities"
+              placeholder="Key Responsibilities"
+              value={form.keyResponsibilities}
+              onChange={(e) => updateField("keyResponsibilities", e.target.value)}
+              onBlur={() => handleFieldBlur("keyResponsibilities")}
+              aria-invalid={Boolean(getFieldError("keyResponsibilities"))}
+            />
+            {getFieldError("keyResponsibilities") ? <small className="admin-inline-error">{getFieldError("keyResponsibilities")}</small> : null}
+            </div>
+            <div className="admin-form-field">
+            <label htmlFor="admin-job-skills">Mandatory Skills</label>
+            <textarea
+              id="admin-job-skills"
               placeholder="Mandatory Skills"
               value={form.mandatorySkills}
               onChange={(e) =>

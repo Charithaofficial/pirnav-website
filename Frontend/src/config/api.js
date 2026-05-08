@@ -1,4 +1,4 @@
-const DEFAULT_API_ORIGIN = "https://breath-kelp-skipping.ngrok-free.dev";
+const DEFAULT_API_ORIGIN = "https://farrandly-interalar-talon.ngrok-free.dev";
 
 export const API_ORIGIN =
   import.meta.env.VITE_API_ORIGIN?.trim().replace(/\/+$/, "") || DEFAULT_API_ORIGIN;
