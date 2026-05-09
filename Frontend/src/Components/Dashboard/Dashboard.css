@@ -1984,14 +1984,14 @@
 
 .footer-links a,
 .footer-contact-links a{
-  color:#111827;
+  color:#4b5563;
   text-decoration:none;
   transition:color 0.25s ease, transform 0.25s ease;
 }
 
 .footer-links a:hover,
 .footer-contact-links a:hover{
-  color:#111827;
+  color:#0b7286;
 }
 
 .footer-links a{
@@ -1999,7 +1999,7 @@
   align-items:center;
   justify-content:space-between;
   font-size:14px;
-  font-weight:500;
+  font-weight:400;
   padding:8px 0;
   position:relative;
   border-bottom:1px solid rgba(11, 114, 134, 0.08);
@@ -2011,8 +2011,8 @@
   right:0;
   width:8px;
   height:8px;
-  border-top:1px solid #111827;
-  border-right:1px solid #111827;
+  border-top:1px solid #0b7286;
+  border-right:1px solid #0b7286;
   transform:rotate(45deg) scale(0.85);
   opacity:0;
   transition:opacity 0.25s ease, transform 0.25s ease;
@@ -2055,9 +2055,9 @@
 .footer-text-item{
   display:block;
   font-size:14px;
-  font-weight:500;
+  font-weight:400;
   padding:8px 0;
-  color:#111827;
+  color:#4b5563;
   border-bottom:1px solid rgba(11, 114, 134, 0.08);
   text-decoration:none;
   transition:transform 0.25s ease, color 0.25s ease;

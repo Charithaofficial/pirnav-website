@@ -282,7 +282,7 @@ function AdminInfoPage({ type }) {
                         onClick={() => togglePasswordVisibility(field.name)}
                         aria-label={visiblePasswords[field.name] ? `Hide ${field.label}` : `Show ${field.label}`}
                       >
-                        {visiblePasswords[field.name] ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {visiblePasswords[field.name] ? <Eye size={18} /> : <EyeOff size={18} />}
                       </button>
                     </div>
                   ) : (

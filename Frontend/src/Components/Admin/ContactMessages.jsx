@@ -20,6 +20,7 @@ const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
   const [selected, setSelected] = useState(null);
   const [deleteMsg, setDeleteMsg] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -131,6 +132,36 @@ const ContactMessages = () => {
     }
   };
  
+  const matchesDateFilter = (value) => {
+    if (dateFilter === "all") return true;
+    if (!value) return false;
+
+    const messageDate = new Date(value);
+    if (Number.isNaN(messageDate.getTime())) return false;
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfTomorrow = new Date(startOfToday);
+    startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+    if (dateFilter === "today") {
+      return messageDate >= startOfToday && messageDate < startOfTomorrow;
+    }
+
+    if (dateFilter === "last7") {
+      const startOfRange = new Date(startOfToday);
+      startOfRange.setDate(startOfRange.getDate() - 6);
+      return messageDate >= startOfRange && messageDate < startOfTomorrow;
+    }
+
+    if (dateFilter === "month") {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      return messageDate >= startOfMonth && messageDate < startOfTomorrow;
+    }
+
+    return true;
+  };
+
   const filtered = messages.filter((m) => {
     const matchesSearch =
       m.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -141,7 +172,7 @@ const ContactMessages = () => {
     const matchesStatus =
       statusFilter === "all" || normalizedStatus === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesDateFilter(m.createdDate);
   });
 
   const formatDate = (value) => {
@@ -176,6 +207,16 @@ const ContactMessages = () => {
           />
 </div>
         <select
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          aria-label="Filter messages by date"
+        >
+          <option value="all">All Dates</option>
+          <option value="today">Today</option>
+          <option value="last7">Last 7 Days</option>
+          <option value="month">This Month</option>
+        </select>
+        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filter messages by status"
@@ -203,12 +244,14 @@ const ContactMessages = () => {
         <tbody>
           {filtered.map((msg) => (
 <tr key={msg.id}>
-<td>
-<strong>{msg.name}</strong>
+<td className="message-sender-cell">
+<strong title={msg.name}>{msg.name}</strong>
 <br />
-<small>{msg.email}</small>
+<small title={msg.email}>{msg.email}</small>
 </td>
-              <td>{msg.subject}</td>
+              <td className="message-subject-cell">
+                <span title={msg.subject}>{msg.subject}</span>
+              </td>
               <td>
 <span className={`status ${normalizeStatus(msg.status) === "unread" ? "unread" : "read"}`}>
                  {normalizeStatus(msg.status) === "unread" ? "Unread" : msg.status || "Read"}

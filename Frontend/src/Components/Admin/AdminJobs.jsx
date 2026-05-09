@@ -301,7 +301,7 @@ const AdminJobs = () => {
     <div className="jobs-wrapper">
       <div className="jobs-header">
         <h1>Jobs</h1>
-        <button className="add-btn" onClick={openCreate}>
+        <button className="add-btn job-post-btn" onClick={openCreate}>
           <Plus size={16} /> Post New Job
         </button>
       </div>

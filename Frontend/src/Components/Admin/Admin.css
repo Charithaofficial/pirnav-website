@@ -1253,6 +1253,7 @@ body, html {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
 .messages-header,
@@ -1285,18 +1286,28 @@ body, html {
 }
 
 .search-box {
+  width: 320px;
+  max-width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
-  padding: 8px;
-  border-radius: 6px;
+  background: #ffffff;
+  padding: 0 14px;
+  border: 1px solid #dbe4ec;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
 .search-box input {
   border: none;
   outline: none;
   width: 100%;
+  min-width: 0;
+  height: 100%;
+  font: inherit;
+  background: transparent;
 }
 
 .messages-table,
@@ -1305,6 +1316,10 @@ body, html {
   background: white;
   border-radius: 8px;
   border-collapse: collapse;
+}
+
+.messages-table {
+  table-layout: fixed;
 }
 
 .messages-table th,
@@ -1320,6 +1335,58 @@ body, html {
 
 .messages-table th {
   font-weight: 1000;
+}
+
+.messages-table th:nth-child(1),
+.messages-table td:nth-child(1) {
+  width: 30%;
+}
+
+.messages-table th:nth-child(2),
+.messages-table td:nth-child(2) {
+  width: 38%;
+}
+
+.messages-table th:nth-child(3),
+.messages-table td:nth-child(3) {
+  width: 12%;
+}
+
+.messages-table th:nth-child(4),
+.messages-table td:nth-child(4) {
+  width: 12%;
+}
+
+.messages-table th:nth-child(5),
+.messages-table td:nth-child(5) {
+  width: 8%;
+}
+
+.message-sender-cell,
+.message-subject-cell {
+  min-width: 0;
+}
+
+.message-sender-cell strong,
+.message-sender-cell small,
+.message-subject-cell span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-sender-cell strong,
+.message-sender-cell small {
+  white-space: nowrap;
+}
+
+.message-subject-cell span {
+  display: -webkit-box;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .applications-table th {
@@ -1555,6 +1622,8 @@ body, html {
   padding: 10px;
   border-radius: 6px;
   font-size: 14px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .modal-actions {
@@ -1582,6 +1651,16 @@ body, html {
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.job-post-btn {
+  background: #078da3;
+}
+
+.job-post-btn:hover,
+.job-post-btn:focus-visible {
+  background: #06788c;
+  outline: none;
 }
 
 .delete-btn,
@@ -1765,20 +1844,18 @@ body, html {
   gap: 16px;
 }
 
+.messages-filter-bar {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
 .messages-filter-bar .search-box {
-  flex: 1;
+  flex: 0 1 320px;
   min-width: 0;
-  max-width: 1000px;
-  height: 24px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid #dbe4ec;
-  box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
 .messages-filter-bar select {
-  margin-left: auto;
-  min-width: 180px;
+  min-width: 150px;
   padding: 10px 14px;
   border: 1px solid #dbe4ec;
   border-radius: 12px;
@@ -1788,15 +1865,24 @@ body, html {
   box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
+.messages-filter-bar select:first-of-type {
+  min-width: 170px;
+}
+
+@media (max-width: 640px) {
+  .search-box,
+  .messages-filter-bar .search-box,
+  .messages-filter-bar select,
+  .applications-wrapper .filter-bar select {
+    flex: 1 1 100%;
+    max-width: none;
+    width: 100%;
+  }
+}
+
 .applications-wrapper .filter-bar .search-box {
-  flex: 1;
+  flex: 0 1 320px;
   min-width: 0;
-  max-width: 1000px;
-  height: 24px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid #dbe4ec;
-  box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
 .applications-wrapper .filter-bar select {
@@ -2081,16 +2167,20 @@ th {
 
 .interview-feedback-search,
 .interview-feedback-filter {
-  min-height: 48px;
-  border-radius: 14px;
+  min-height: 44px;
+  box-sizing: border-box;
+  border-radius: 12px;
   border: 1px solid #dbe4ec;
-  background: #f8fbfd;
+  background: #ffffff;
   font-size: 14px;
-  padding: 0 16px;
+  padding: 0 14px;
+  box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
 .interview-feedback-search {
-  flex: 1 1 auto;
+  flex: 0 1 320px;
+  width: 320px;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -2668,22 +2758,26 @@ th {
 }
 
 .interview-search {
-  width: 170px;
-  min-height: 34px;
+  width: 320px;
+  max-width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 10px;
-  border: 1px solid #e1e8f0;
-  border-radius: 6px;
+  padding: 0 14px;
+  border: 1px solid #dbe4ec;
+  border-radius: 12px;
   background: #ffffff;
   color: #7e8a9b;
+  box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
 .interview-search input {
   border: none;
-  min-height: 28px;
-  font-size: 12px;
+  min-height: 40px;
+  font-size: 14px;
+  background: transparent;
 }
 
 .interview-total-badge {
