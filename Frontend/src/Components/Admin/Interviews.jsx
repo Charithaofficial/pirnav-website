@@ -307,26 +307,6 @@ const Interviews = () => {
           >
             Interview Workflow
           </div>
-          {notice ? (
-            <div
-              role="status"
-              style={{
-                marginTop: "12px",
-                padding: "13px 16px",
-                borderRadius: "12px",
-                background: notice.type === "success" ? "#dcfce7" : "#fee2e2",
-                border:
-                  notice.type === "success"
-                    ? "1px solid #86efac"
-                    : "1px solid #fecaca",
-                color: notice.type === "success" ? "#166534" : "#b91c1c",
-                fontWeight: 700,
-                boxShadow: "0 10px 22px rgba(15, 23, 42, 0.06)",
-              }}
-            >
-              {notice.message}
-            </div>
-          ) : null}
         </div>
 
         <div
@@ -356,6 +336,16 @@ const Interviews = () => {
                   : "Pick a candidate, assign a manager, and schedule the interview without changing any existing workflow."}
               </p>
             </div>
+
+            {notice ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className={`interview-notice-bar ${notice.type}`}
+              >
+                {notice.message}
+              </div>
+            ) : null}
 
             <div
               style={{
@@ -470,7 +460,7 @@ const Interviews = () => {
               )}
 
               <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                <button type="submit" disabled={saving} style={{ flex: "1 1 220px", minHeight: "48px", border: "none", borderRadius: "14px", background: editingInterview ? "linear-gradient(135deg, #f59e0b, #facc15)" : "linear-gradient(135deg, #2563eb, #38bdf8)", color: editingInterview ? "#422006" : "#fff", fontWeight: 700, cursor: "pointer", boxShadow: editingInterview ? "0 18px 30px rgba(245, 158, 11, 0.22)" : "0 18px 30px rgba(37, 99, 235, 0.22)" }}>
+                <button type="submit" disabled={saving} className="interview-schedule-submit-btn">
                   {saving ? "Saving..." : editingInterview ? "Save Reschedule" : "Schedule Interview"}
                 </button>
                 {editingInterview ? (

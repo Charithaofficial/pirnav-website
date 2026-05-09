@@ -402,7 +402,11 @@ Password strength: {passwordStrength}
 <tr key={admin.id}>
 <td>{admin.username}</td>
 <td>{admin.email}</td>
-<td>{admin.status}</td>
+<td>
+<span className={`admin-user-status-badge ${String(admin.status || "").toLowerCase()}`}>
+{admin.status}
+</span>
+</td>
 <td>
 <button
 type="button"

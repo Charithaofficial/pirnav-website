@@ -355,15 +355,15 @@ const Applications = () => {
                 <span></span>
               )}
               <div className="application-modal-secondary-actions">
+                <button type="button" className="close-btn" onClick={closeModal}>
+                  UPDATE
+                </button>
                 <button
                   type="button"
                   className="delete-btn"
                   onClick={() => setDeleteApplication(selected)}
                 >
                   Delete
-                </button>
-                <button type="button" className="close-btn" onClick={closeModal}>
-                  Close
                 </button>
               </div>
             </div>
@@ -377,7 +377,7 @@ const Applications = () => {
 <h3>Delete Application</h3>
 <p>Delete application from {deleteApplication.name}?</p>
             <div className="modal-actions">
-<button type="button" onClick={() => setDeleteApplication(null)}>
+<button type="button" className="close-btn" onClick={() => setDeleteApplication(null)}>
                 Cancel
 </button>
               <button type="button" className="delete-btn" onClick={handleDelete}>

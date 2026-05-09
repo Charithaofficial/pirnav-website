@@ -301,18 +301,17 @@ const AdminJobs = () => {
     <div className="jobs-wrapper">
       <div className="jobs-header">
         <h1>Jobs</h1>
+        <div className="search-box">
+          <Search size={16} />
+          <input
+            placeholder="Search jobs..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <button className="add-btn job-post-btn" onClick={openCreate}>
           <Plus size={16} /> Post New Job
         </button>
-      </div>
-
-      <div className="search-box">
-        <Search size={16} />
-        <input
-          placeholder="Search jobs..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
       </div>
 
       {loading && <p>Loading...</p>}
@@ -373,7 +372,7 @@ const AdminJobs = () => {
 
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal large">
+          <div className="modal large job-modal">
             <h3>{editingJob ? "Edit Job" : "Post New Job"}</h3>
             <div className="admin-form-field">
             <label htmlFor="admin-job-title">Job Title</label>
@@ -524,12 +523,12 @@ const AdminJobs = () => {
             {getFieldError("mandatorySkills") ? <small className="admin-inline-error">{getFieldError("mandatorySkills")}</small> : null}
             </div>
             <div className="modal-actions">
-              <button onClick={() => {
+              <button className="job-modal-cancel-btn" onClick={() => {
                 setShowModal(false);
                 setFormErrors(initialJobErrors);
                 setFormTouched({});
               }}>Cancel</button>
-              <button onClick={handleSave} className="save-btn">
+              <button onClick={handleSave} className="save-btn job-modal-action-btn">
                 {editingJob ? "Update" : "Create"}
               </button>
             </div>
@@ -543,8 +542,8 @@ const AdminJobs = () => {
             <h3>Delete Job</h3>
             <p>Are you sure you want to delete this job?</p>
             <div className="modal-actions">
-              <button onClick={() => setDeleteModal(false)}>Cancel</button>
-              <button onClick={handleDelete} className="delete-btn">
+              <button className="job-modal-cancel-btn" onClick={() => setDeleteModal(false)}>Cancel</button>
+              <button onClick={handleDelete} className="delete-btn job-modal-action-btn">
                 Delete
               </button>
             </div>
