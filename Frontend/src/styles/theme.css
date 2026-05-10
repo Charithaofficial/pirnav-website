@@ -57,7 +57,7 @@ body {
   width: 100%;
   padding-top: calc(var(--navbar-offset, clamp(4.5rem, 8vw, 5.5rem)) + var(--space-lg));
   padding-bottom: var(--section-block-space);
-  overflow-x: clip;
+  overflow-x: hidden;
   background: var(--theme-page-bg);
   color: var(--theme-text);
 }

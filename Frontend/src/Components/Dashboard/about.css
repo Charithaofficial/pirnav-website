@@ -4,7 +4,7 @@ body {
 }
 
 .about-page {
-  overflow-x: clip;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at top left, rgba(79, 157, 173, 0.12), transparent 20%),
     linear-gradient(180deg, #f4f8fb 0%, #f8fbfd 32%, #eef5f7 100%);

@@ -12,7 +12,7 @@ html, body {
   padding: 0;
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
   font-family: "Segoe UI", sans-serif;
   background: #f4f8fa;
   color: #163340;
