@@ -1850,6 +1850,11 @@ body, html {
   white-space: nowrap;
 }
 
+.admin-delete-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .close-btn {
   background: #e2e8f0;
   color: #334155;
@@ -2309,6 +2314,7 @@ body, html {
   background: #86efac;
   cursor: not-allowed;
 }
+
 
 .admin-users-status.success {
   color: #16a34a;

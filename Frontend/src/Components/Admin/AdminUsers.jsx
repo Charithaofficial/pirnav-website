@@ -232,6 +232,10 @@ return;
 }
 
 if (!response.ok) {
+if (response.status === 403) {
+throw new Error("Only super admin can register new users");
+}
+
 throw new Error("Failed to register admin user");
 }
 
