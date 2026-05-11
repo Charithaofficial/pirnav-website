@@ -24,6 +24,7 @@ import ChatWidget from "./Components/Common/ChatWidget.jsx";
 
 /* Admin */
 import AdminLayout from "./Components/Admin/AdminLayout.jsx";
+import AdminForgotPassword from "./Components/Admin/AdminForgotPassword.jsx";
 import AdminLogin from "./Components/Admin/AdminLogin.jsx";
 import DashboardHome from "./Components/Admin/DashboardHome.jsx";
 import ContactMessages from "./Components/Admin/ContactMessages.jsx";
@@ -104,6 +105,7 @@ function AppContent() {
 
           {/* Admin Login */}
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-forgot-password" element={<AdminForgotPassword />} />
 
           {/* Admin Panel */}
           <Route path="/admin" element={<AdminLayout />}>

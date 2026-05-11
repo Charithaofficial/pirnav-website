@@ -115,6 +115,38 @@
   },
   {
     "ContainingType": "Pirnav.API.Controllers.AdminController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/Admin/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Pirnav.API.DTOs.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Pirnav.API.Controllers.AdminController",
+    "Method": "SendOtp",
+    "RelativePath": "api/Admin/send-otp",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Pirnav.API.DTOs.SendOtpDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Pirnav.API.Controllers.AdminController",
     "Method": "UpdateProfile",
     "RelativePath": "api/Admin/update-profile",
     "HttpMethod": "PUT",

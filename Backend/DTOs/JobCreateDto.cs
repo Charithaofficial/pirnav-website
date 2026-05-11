@@ -8,5 +8,7 @@
     public string CTC { get; set; }
     public string HighestQualification { get; set; }
     public string JobDescription { get; set; }
+
+    public string? KeyResponsibilities { get; set; }
     public string MandatorySkills { get; set; }
 }

@@ -383,7 +383,7 @@
 /* ===== JOB DETAILS PAGE ===== */
 .job-details-page {
   position: relative;
-  padding: 132px 22px 96px;
+  padding: 86px 22px 72px;
   background:
     radial-gradient(circle at top left, rgba(255, 138, 101, 0.12), transparent 26%),
     radial-gradient(circle at top right, rgba(68, 185, 255, 0.12), transparent 22%),
@@ -426,7 +426,7 @@
 }
 
 .job-details-card-shell {
-  max-width: 940px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 0;
   border-radius: 28px;
@@ -446,13 +446,13 @@
 
 .job-details-hero {
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .job-details-copy {
   position: relative;
   min-height: auto;
-  padding: 42px 44px 34px;
+  padding: 34px 42px 26px;
   background:
     linear-gradient(135deg, #091426 0%, #0f223b 56%, #163459 100%);
   color: #f8fbff;
@@ -507,7 +507,7 @@
 
 .job-hero-topline {
   display: block;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .job-hero-link {
@@ -532,10 +532,10 @@
 }
 
 .job-details-copy h1 {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   max-width: none;
-  font-size: clamp(2rem, 2.3vw, 3.1rem);
-  line-height: 0.98;
+  font-size: clamp(1.75rem, 2.1vw, 2.55rem);
+  line-height: 1.05;
   letter-spacing: -0.04em;
   color: #ffffff;
   font-family: inherit;
@@ -549,29 +549,33 @@
 }
 
 .job-details-copy p {
-  max-width: 68ch;
+  max-width: 64ch;
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.8;
+  font-size: 0.95rem;
+  line-height: 1.55;
   color: rgba(240, 247, 255, 0.8);
 }
 
 .job-inline-skills {
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .job-inline-responsibilities {
-  max-width: 68ch;
-  margin-top: 24px;
+  max-width: 64ch;
+  margin-top: 16px;
 }
 
 .job-inline-responsibilities ul {
   display: grid;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
   padding-left: 20px;
   color: rgba(240, 247, 255, 0.84);
-  line-height: 1.65;
+  line-height: 1.42;
+  font-size: 0.95rem;
+  max-height: 132px;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 .job-inline-responsibilities li::marker {
@@ -580,7 +584,7 @@
 
 .job-inline-label {
   display: inline-flex;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -611,14 +615,14 @@
 .job-hero-summary {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .job-summary-item {
   min-width: 0;
-  padding: 16px 16px 14px;
-  border-radius: 18px;
+  padding: 12px 12px 10px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   transition: transform 0.28s ease, box-shadow 0.28s ease;
@@ -642,8 +646,8 @@
 .job-summary-item strong {
   color: #ffffff;
   display: block;
-  font-size: 0.98rem;
-  line-height: 1.5;
+  font-size: 0.9rem;
+  line-height: 1.35;
   word-break: break-word;
 }
 
@@ -1440,7 +1444,7 @@
   }
 
   .job-details-page {
-    padding: 118px 16px 70px;
+    padding: 92px 16px 60px;
   }
 
   .job-details-card-shell {
@@ -1458,7 +1462,7 @@
 
   .job-details-copy {
     min-height: auto;
-    padding: 30px 24px 28px;
+    padding: 28px 22px 22px;
   }
 
   .job-details-card-shell {
@@ -1479,7 +1483,7 @@
   }
 
   .job-details-hero {
-    margin-bottom: 22px;
+    margin-bottom: 12px;
   }
 
   .form-section-head {
@@ -1530,11 +1534,11 @@
 
   .job-details-copy {
     min-height: auto;
-    padding: 26px 20px 24px;
+    padding: 24px 18px 20px;
   }
 
   .job-details-page {
-    padding-top: 110px;
+    padding-top: 86px;
   }
 
   .job-hero-summary {

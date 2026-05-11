@@ -143,6 +143,17 @@ const validateJobForm = (values) =>
 
 const hasJobFormErrors = (errors) => Object.values(errors).some(Boolean);
 
+const buildJobPayload = (values) => {
+  const payload = Object.fromEntries(
+    Object.entries(values).map(([key, value]) => [key, value.trim()])
+  );
+
+  return {
+    ...payload,
+    responsibilities: payload.keyResponsibilities,
+  };
+};
+
 const AdminJobs = () => {
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
@@ -209,11 +220,7 @@ const AdminJobs = () => {
       const res = await fetch(url, {
         method,
         headers,
-        body: JSON.stringify(
-          Object.fromEntries(
-            Object.entries(form).map(([key, value]) => [key, value.trim()])
-          )
-        ),
+        body: JSON.stringify(buildJobPayload(form)),
       });
       if (!res.ok) {
         alert("Operation failed");
@@ -500,7 +507,7 @@ const AdminJobs = () => {
             <label htmlFor="admin-job-responsibilities">Key Responsibilities</label>
             <textarea
               id="admin-job-responsibilities"
-              placeholder="Key Responsibilities"
+              placeholder="Add each responsibility on a new line"
               value={form.keyResponsibilities}
               onChange={(e) => updateField("keyResponsibilities", e.target.value)}
               onBlur={() => handleFieldBlur("keyResponsibilities")}

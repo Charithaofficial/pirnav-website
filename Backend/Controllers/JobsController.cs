@@ -35,6 +35,7 @@ namespace Pirnav.API.Controllers
                     CTC = j.CTC ?? "",
                     HighestQualification = j.HighestQualification ?? "",
                     JobDescription = j.JobDescription ?? "",
+                    KeyResponsibilities = j.KeyResponsibilities ?? "",
                     MandatorySkills = j.MandatorySkills ?? "",
                     CreatedDate = j.CreatedDate ?? DateTime.UtcNow
                 })
@@ -64,6 +65,7 @@ namespace Pirnav.API.Controllers
                 CTC = dto.CTC,
                 HighestQualification = dto.HighestQualification,
                 JobDescription = dto.JobDescription,
+                KeyResponsibilities = dto.KeyResponsibilities,
                 MandatorySkills = dto.MandatorySkills,
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true
@@ -78,6 +80,9 @@ namespace Pirnav.API.Controllers
                 message = "Job created successfully"
             });
         }
+
+
+
 
         [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPut("{id}")]
@@ -96,6 +101,7 @@ namespace Pirnav.API.Controllers
             job.CTC = dto.CTC;
             job.HighestQualification = dto.HighestQualification;
             job.JobDescription = dto.JobDescription;
+            job.KeyResponsibilities = dto.KeyResponsibilities;
             job.MandatorySkills = dto.MandatorySkills;
 
             _context.SaveChanges();
@@ -148,6 +154,7 @@ namespace Pirnav.API.Controllers
                     CTC = j.CTC ?? "",
                     HighestQualification = j.HighestQualification ?? "",
                     JobDescription = j.JobDescription ?? "",
+                    KeyResponsibilities = j.KeyResponsibilities ?? "",
                     MandatorySkills = j.MandatorySkills ?? "",
                     CreatedDate = j.CreatedDate ?? DateTime.UtcNow
                 })
@@ -176,6 +183,7 @@ namespace Pirnav.API.Controllers
                     CTC = j.CTC ?? "",
                     HighestQualification = j.HighestQualification ?? "",
                     JobDescription = j.JobDescription ?? "",
+                    KeyResponsibilities = j.KeyResponsibilities ?? "",
                     MandatorySkills = j.MandatorySkills ?? "",
                     CreatedDate = j.CreatedDate ?? DateTime.UtcNow
                 })

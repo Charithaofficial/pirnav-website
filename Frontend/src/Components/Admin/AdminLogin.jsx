@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
 import { LIMITS, validateEmail } from "../../utils/formValidation";
@@ -96,6 +96,7 @@ const getCaptchaError = (value, captcha) => {
 };
  
 const AdminLogin = () => {
+  const location = useLocation();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState(() => createCaptcha());
@@ -197,6 +198,9 @@ const AdminLogin = () => {
       <div className="admin-right">
         <div className="admin-card">
           <h2>Admin Login</h2>
+          {location.state?.message && (
+            <small className="success-text center">{location.state.message}</small>
+          )}
  
           <form onSubmit={handleLogin}>
             <div className="form-group">
@@ -270,6 +274,10 @@ const AdminLogin = () => {
                   Password strength: {passwordStrength}
                 </small>
               )}
+            </div>
+
+            <div className="admin-login-links">
+              <Link to="/admin-forgot-password">Forgot Password?</Link>
             </div>
 
             <div className="form-group">

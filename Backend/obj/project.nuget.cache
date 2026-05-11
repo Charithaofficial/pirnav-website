@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1jRxY77OeQ4=",
+  "dgSpecHash": "6RI3a5TxdVI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Admin\\Downloads\\Pirnav.API 2 (1)\\Pirnav.API\\Pirnav.API.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Pirnav.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
