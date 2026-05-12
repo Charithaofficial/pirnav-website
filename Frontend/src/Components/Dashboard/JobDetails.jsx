@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import "./Careers.css";
 import { buildApiUrl } from "../../config/api";
+import { LIMITS, normalizeEmailInput, validateEmail } from "../../utils/formValidation";
 
 const JOB_APPLICATIONS_API = buildApiUrl("JobApplications");
 
@@ -25,7 +26,6 @@ const splitSkills = (skills) => {
     .filter(Boolean);
 };
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^\d{10}$/;
 const textOnlyRegex = /^[A-Za-z]+(?:[A-Za-z\s.'-]*[A-Za-z])?$/;
 const ctcRegex = /^[0-9A-Za-z.,\s/-]+$/;
@@ -36,7 +36,7 @@ const formSections = [
     description: "Basic information so we can identify and contact you.",
     fields: [
       { id: "fullName", label: "Full Name *", type: "text", name: "fullName", required: true },
-      { id: "email", label: "Email *", type: "email", name: "email", required: true },
+      { id: "email", label: "Email *", type: "email", name: "email", required: true, maxLength: LIMITS.emailMax },
       { id: "phone", label: "Phone *", type: "tel", name: "phone", required: true, inputMode: "numeric", maxLength: 10 },
       {
         id: "gender",
@@ -123,8 +123,7 @@ const JobDetails = () => {
         return "";
       case "email":
         if (!trimmedValue) return "Email is required.";
-        if (!emailRegex.test(trimmedValue)) return "Enter a valid email address.";
-        return "";
+        return validateEmail(trimmedValue);
       case "phone":
         if (!trimmedValue) return "Phone number is required.";
         if (!phoneRegex.test(String(trimmedValue).replace(/\D/g, ""))) {
@@ -264,6 +263,10 @@ const JobDetails = () => {
         nextValue = value.replace(/[^A-Za-z\s.'-]/g, "");
       }
 
+      if (name === "email") {
+        nextValue = normalizeEmailInput(value);
+      }
+
       if (name === "experience") {
         nextValue = value === "" ? "" : value.replace(/[^0-9.]/g, "");
       }
@@ -307,7 +310,7 @@ const JobDetails = () => {
 
     form.append("JobId", id);
     form.append("Name", formData.fullName);
-    form.append("Email", formData.email);
+    form.append("Email", normalizeEmailInput(formData.email));
     form.append("PhoneNumber", formData.phone);
     form.append("Gender", formData.gender);
     form.append("TotalExperience", formData.experience);
@@ -508,7 +511,7 @@ const JobDetails = () => {
                 ))}
               </div>
 
-              <button type="submit" className="apply-btn submit-application-btn" disabled={loading}>
+              <button type="submit" className="apply-btn submit-application-btn" disabled={loading || Boolean(formErrors.email)}>
                 {loading ? "Submitting..." : "Submit Application"}
               </button>
 

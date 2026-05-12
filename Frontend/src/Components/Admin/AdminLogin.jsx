@@ -3,7 +3,7 @@ import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
-import { LIMITS, validateEmail } from "../../utils/formValidation";
+import { LIMITS, normalizeEmailInput, validateEmail } from "../../utils/formValidation";
 import logo from "../../assets/logo.png";
  
 const API_BASE = buildApiUrl("Admin/login");
@@ -22,7 +22,7 @@ const createCaptcha = () => {
 };
 
 const getIdentifierError = (value) => {
-  const trimmedValue = value.trim();
+  const trimmedValue = normalizeEmailInput(value);
 
   if (!trimmedValue) {
     return "Email is required";
@@ -32,7 +32,7 @@ const getIdentifierError = (value) => {
     return `Email must be ${EMAIL_MAX_LENGTH} characters or less`;
   }
 
-  return validateEmail(trimmedValue) ? "Enter a valid email address" : "";
+  return validateEmail(trimmedValue);
 };
 
 const getPasswordError = (value) => {
@@ -149,8 +149,8 @@ const AdminLogin = () => {
           "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
-          email: identifier.trim(),
-          username: identifier.trim(),
+          email: normalizeEmailInput(identifier),
+          username: normalizeEmailInput(identifier),
           password,
         }),
       });
@@ -214,7 +214,7 @@ const AdminLogin = () => {
                 maxLength={EMAIL_MAX_LENGTH}
                 value={identifier}
                 onChange={(e) => {
-                  const nextIdentifier = e.target.value;
+                  const nextIdentifier = normalizeEmailInput(e.target.value);
                   const identifierError = getIdentifierError(nextIdentifier);
 
                   setIdentifier(nextIdentifier);
@@ -324,7 +324,7 @@ const AdminLogin = () => {
               <small className="error-text center">{errors.api}</small>
             )}
  
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading || Boolean(getIdentifierError(identifier))}>
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>

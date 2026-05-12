@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import FeedbackCard, {
   getDecisionValue,
@@ -237,13 +238,15 @@ const InterviewFeedback = () => {
       </div>
 
       <div className="interview-feedback-toolbar">
-        <input
-          type="text"
-          placeholder="Search by candidate name"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-          className="interview-feedback-search"
-        />
+        <div className="interview-feedback-search">
+          <Search size={16} aria-hidden="true" />
+          <input
+            type="text"
+            placeholder="Search by candidate name"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+        </div>
 
         <select
           value={statusFilter}

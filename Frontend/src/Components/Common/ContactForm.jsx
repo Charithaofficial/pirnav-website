@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   hasErrors,
   LIMITS,
+  normalizeEmailInput,
   sanitizeFormPayload,
   validateContactForm,
 } from "../../utils/formValidation";
@@ -50,7 +51,8 @@ function ContactForm({
   }, [status]);
 
   const updateField = (name, value) => {
-    const nextValues = { ...formData, [name]: value };
+    const nextValue = name === "email" ? normalizeEmailInput(value) : value;
+    const nextValues = { ...formData, [name]: nextValue };
     setFormData(nextValues);
     setErrors(validateContactForm(nextValues));
   };
@@ -59,6 +61,10 @@ function ContactForm({
     const { name, value } = event.target;
 
     updateField(name, value);
+
+    if (name === "email" && value.trim()) {
+      setTouched((current) => ({ ...current, email: true }));
+    }
 
     if (name === "name" && value.trim().length >= 3) {
       setTouched((current) => ({ ...current, name: true }));
@@ -202,7 +208,7 @@ function ContactForm({
           {visibleErrors.message ? <small>{visibleErrors.message}</small> : null}
         </label>
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || Boolean(errors.email)}>
           {loading ? "Sending..." : buttonLabel}
         </button>
 

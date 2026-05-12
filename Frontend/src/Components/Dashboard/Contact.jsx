@@ -23,10 +23,10 @@ const ContactUs = () => {
         "Connect with our delivery team for product discussions, support needs, and solution planning.",
     },
     {
-      city: "Thirupati",
-      office: "Thirupati",
+      city: "Tirupati",
+      office: "Tirupati",
       phone: "+91 91234 56789",
-      email: "thirupati@pirnav.com",
+      email: "tirupati@pirnav.com",
       description:
         "Visit our office to discuss enterprise services, staffing support, and project execution.",
     },

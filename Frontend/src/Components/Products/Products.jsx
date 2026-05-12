@@ -29,6 +29,8 @@ import {
 import "./Products.css";
 import {
   hasErrors,
+  LIMITS,
+  normalizeEmailInput,
   sanitizeFormPayload,
   validateDemoForm,
 } from "../../utils/formValidation";
@@ -944,7 +946,8 @@ function Products() {
   const handleDemoChange = (event) => {
     const { name, value } = event.target;
     setDemoForm((prev) => {
-      const nextValues = { ...prev, [name]: value };
+      const nextValue = name === "email" ? normalizeEmailInput(value) : value;
+      const nextValues = { ...prev, [name]: nextValue };
       setDemoErrors(validateDemoForm(nextValues));
       return nextValues;
     });
@@ -1250,6 +1253,7 @@ function Products() {
                 type="email"
                 name="email"
                 placeholder="Work email"
+                maxLength={LIMITS.emailMax}
                 value={demoForm.email}
                 onChange={handleDemoChange}
                 onBlur={handleDemoBlur}
@@ -1282,7 +1286,7 @@ function Products() {
               {demoTouched.message && demoErrors.message ? (
                 <p className="products-demo-inline-error">{demoErrors.message}</p>
               ) : null}
-              <button type="submit" className="products-demo-submit" disabled={demoLoading}>
+              <button type="submit" className="products-demo-submit" disabled={demoLoading || Boolean(demoErrors.email)}>
                 {demoLoading ? "Sending..." : "Request Demo"}
               </button>
 

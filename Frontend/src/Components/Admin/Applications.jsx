@@ -355,7 +355,7 @@ const Applications = () => {
                 <span></span>
               )}
               <div className="application-modal-secondary-actions">
-                <button type="button" className="close-btn" onClick={closeModal}>
+                <button type="button" className="close-btn application-update-btn" onClick={closeModal}>
                   UPDATE
                 </button>
                 <button

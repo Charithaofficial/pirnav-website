@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Eye, EyeOff, LockKeyhole, Save, User } from "lucide-react";
 import { buildApiUrl } from "../../config/api";
+import { LIMITS, normalizeEmailInput, validateEmail } from "../../utils/formValidation";
 import "./Admin.css";
 
 const ADMIN_INFO_API = {
@@ -85,12 +86,19 @@ function AdminInfoPage({ type }) {
   const initialValues = useMemo(() => buildInitialValues(content.fields), [content]);
   const [values, setValues] = useState(initialValues);
   const [status, setStatus] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [fieldTouched, setFieldTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(type === "profile");
   const [visiblePasswords, setVisiblePasswords] = useState({});
 
   const updateField = (name, value) => {
-    setValues((current) => ({ ...current, [name]: value }));
+    const nextValue = name === "email" ? normalizeEmailInput(value) : value;
+    setValues((current) => ({ ...current, [name]: nextValue }));
+    setFieldErrors((current) => ({
+      ...current,
+      [name]: name === "email" ? validateEmail(nextValue) : "",
+    }));
     setStatus("");
   };
 
@@ -104,6 +112,8 @@ function AdminInfoPage({ type }) {
   useEffect(() => {
     setValues(initialValues);
     setStatus("");
+    setFieldErrors({});
+    setFieldTouched({});
   }, [initialValues]);
 
   useEffect(() => {
@@ -138,7 +148,7 @@ function AdminInfoPage({ type }) {
 
         setValues({
           username: profile.username || profile.Username || "",
-          email: profile.email || profile.Email || "",
+          email: normalizeEmailInput(profile.email || profile.Email || ""),
           role: profile.role || profile.Role || "",
         });
         publishProfileUpdate(profile);
@@ -167,7 +177,7 @@ function AdminInfoPage({ type }) {
         method: "PUT",
         payload: {
           username: values.username,
-          email: values.email,
+          email: normalizeEmailInput(values.email),
         },
       };
     }
@@ -185,6 +195,17 @@ function AdminInfoPage({ type }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (type === "profile") {
+      const emailError = validateEmail(values.email);
+      setFieldTouched((current) => ({ ...current, email: true }));
+      setFieldErrors((current) => ({ ...current, email: emailError }));
+
+      if (emailError) {
+        setStatus("");
+        return;
+      }
+    }
+
     setLoading(true);
     setStatus("");
 
@@ -210,7 +231,7 @@ function AdminInfoPage({ type }) {
           const mergedValues = {
             ...current,
             username: profile.username || current.username,
-            email: profile.email || current.email,
+            email: normalizeEmailInput(profile.email || current.email),
             role: profile.role || current.role,
           };
 
@@ -244,7 +265,9 @@ function AdminInfoPage({ type }) {
 
         <form className="admin-info-form" onSubmit={handleSubmit}>
           <div className="admin-info-form-grid">
-            {content.fields.map((field) => (
+            {content.fields.map((field) => {
+              const fieldError = fieldTouched[field.name] ? fieldErrors[field.name] : "";
+              return (
               <label
                 key={field.name}
                 className={`admin-info-field ${field.type === "textarea" ? "admin-info-field-full" : ""}`}
@@ -290,18 +313,23 @@ function AdminInfoPage({ type }) {
                       type={field.type}
                       value={values[field.name] || ""}
                       onChange={(event) => updateField(field.name, event.target.value)}
+                      onBlur={() => setFieldTouched((current) => ({ ...current, [field.name]: true }))}
+                      maxLength={field.name === "email" ? LIMITS.emailMax : undefined}
+                      aria-invalid={Boolean(fieldError)}
                       readOnly={field.readOnly}
                       disabled={field.readOnly || loadingProfile}
                     />
                   )
                 )}
+                {fieldError ? <small className="admin-info-field-error">{fieldError}</small> : null}
               </label>
-            ))}
+              );
+            })}
           </div>
 
           <div className="admin-info-actions">
             {status ? <p>{status}</p> : <span>{loadingProfile ? "Loading profile..." : ""}</span>}
-            <button type="submit" disabled={loading || loadingProfile}>
+            <button type="submit" disabled={loading || loadingProfile || Boolean(fieldErrors.email)}>
               <Save size={18} />
               {loading ? "Saving..." : content.buttonLabel}
             </button>

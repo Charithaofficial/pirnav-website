@@ -3,12 +3,13 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
-import { LIMITS, validateEmail } from "../../utils/formValidation";
+import { LIMITS, normalizeEmailInput, validateEmail } from "../../utils/formValidation";
 
 const ADMIN_API = buildApiUrl("Admin");
 const EMAIL_MAX_LENGTH = LIMITS.emailMax;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 64;
+const USERNAME_ALLOWED_PATTERN = /^[A-Za-z0-9 ]+$/;
 const ADMIN_ENDPOINTS = {
   login: `${ADMIN_API}/login`,
   register: `${ADMIN_API}/register`,
@@ -32,11 +33,15 @@ if (trimmedValue.length > 80) {
 return "Username must be 80 characters or less";
 }
 
+if (!USERNAME_ALLOWED_PATTERN.test(trimmedValue)) {
+return "Username can only contain letters, numbers, and spaces";
+}
+
 return "";
 };
 
 const getEmailError = (value) => {
-const trimmedValue = value.trim();
+const trimmedValue = normalizeEmailInput(value);
 
 if (!trimmedValue) {
 return "Email is required";
@@ -46,7 +51,7 @@ if (trimmedValue.length > EMAIL_MAX_LENGTH) {
 return `Email must be ${EMAIL_MAX_LENGTH} characters or less`;
 }
 
-return validateEmail(trimmedValue) ? "Enter a valid email address" : "";
+return validateEmail(trimmedValue);
 };
 
 const getPasswordError = (value) => {
@@ -60,6 +65,18 @@ return `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
 
 if (value.length > PASSWORD_MAX_LENGTH) {
 return `Password must be ${PASSWORD_MAX_LENGTH} characters or less`;
+}
+
+return "";
+};
+
+const getConfirmPasswordError = (value, password) => {
+if (!value.trim()) {
+return "Confirm password is required";
+}
+
+if (value !== password) {
+return "Passwords do not match";
 }
 
 return "";
@@ -97,7 +114,8 @@ const navigate = useNavigate();
 const [form,setForm] = useState({
 username:"",
 email:"",
-password:""
+password:"",
+confirmPassword:""
 });
 const [admins, setAdmins] = useState([]);
 const [summary, setSummary] = useState({});
@@ -106,6 +124,8 @@ const [statusMessage, setStatusMessage] = useState("");
 const [errorMessage, setErrorMessage] = useState("");
 const [saving, setSaving] = useState(false);
 const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const [deleteAdminUser, setDeleteAdminUser] = useState(null);
 const passwordStrength = getPasswordStrength(form.password);
 
 const getHeaders = () => {
@@ -173,10 +193,11 @@ fetchAdmins();
 fetchDashboardSummary();
 }, []);
 
-const getFieldError = (name, value) => {
+const getFieldError = (name, value, values = form) => {
 if (name === "username") return getUsernameError(value);
 if (name === "email") return getEmailError(value);
 if (name === "password") return getPasswordError(value);
+if (name === "confirmPassword") return getConfirmPasswordError(value, values.password);
 
 return "";
 };
@@ -186,6 +207,7 @@ const nextErrors = {
 username: getUsernameError(form.username),
 email: getEmailError(form.email),
 password: getPasswordError(form.password),
+confirmPassword: getConfirmPasswordError(form.confirmPassword, form.password),
 };
 
 Object.keys(nextErrors).forEach((key) => {
@@ -200,12 +222,17 @@ return Object.keys(nextErrors).length === 0;
 
 const handleChange=(e)=>{
 const { name, value } = e.target;
-const fieldError = getFieldError(name, value);
+const nextValue = name === "email" ? normalizeEmailInput(value) : value;
+const nextForm = {...form,[name]:nextValue};
+const fieldError = getFieldError(name, nextValue, nextForm);
 
-setForm((current) => ({...current,[name]:value}));
+setForm(nextForm);
 setFormErrors((current) => ({
 ...current,
 [name]: fieldError,
+...(name === "password" && nextForm.confirmPassword
+? { confirmPassword: getConfirmPasswordError(nextForm.confirmPassword, nextForm.password) }
+: {}),
 }));
 setStatusMessage("");
 setErrorMessage("");
@@ -223,7 +250,11 @@ try {
 const response = await fetch(ADMIN_ENDPOINTS.register, {
 method:"POST",
 headers:getHeaders(),
-body:JSON.stringify(form),
+body:JSON.stringify({
+username: form.username,
+email: form.email,
+password: form.password,
+}),
 });
 
 if (response.status === 401) {
@@ -243,7 +274,8 @@ setStatusMessage("Admin user registered successfully.");
 setForm({
 username:"",
 email:"",
-password:""
+password:"",
+confirmPassword:""
 });
 setFormErrors({});
 fetchAdmins();
@@ -255,12 +287,16 @@ setSaving(false);
 }
 };
 
-const handleDelete = async (id) => {
+const handleDelete = async () => {
+if (!deleteAdminUser) {
+return;
+}
+
 try {
 setErrorMessage("");
 setStatusMessage("");
 
-const response = await fetch(ADMIN_ENDPOINTS.deleteAdmin(id), {
+const response = await fetch(ADMIN_ENDPOINTS.deleteAdmin(deleteAdminUser.id), {
 method:"DELETE",
 headers:getHeaders(),
 });
@@ -271,10 +307,15 @@ return;
 }
 
 if (!response.ok) {
+if (response.status === 403) {
+throw new Error("Only admin can delete admin users");
+}
+
 throw new Error("Failed to delete admin user");
 }
 
 setStatusMessage("Admin user deleted successfully.");
+setDeleteAdminUser(null);
 fetchAdmins();
 fetchDashboardSummary();
 } catch (error) {
@@ -306,6 +347,8 @@ id="admin-register-username"
 name="username"
 placeholder="Username"
 maxLength={80}
+pattern="[A-Za-z0-9 ]+"
+title="Use letters, numbers, and spaces only"
 value={form.username}
 onChange={handleChange}
 aria-invalid={Boolean(formErrors.username)}
@@ -371,7 +414,45 @@ Password strength: {passwordStrength}
 )}
 </label>
 
-<button type="submit" disabled={saving}>
+<label className="admin-user-form-field" htmlFor="admin-register-confirm-password">
+<span>Confirm Password</span>
+<div className="password-input-wrap">
+<input
+id="admin-register-confirm-password"
+type={showConfirmPassword ? "text" : "password"}
+name="confirmPassword"
+placeholder="Confirm your password"
+autoComplete="new-password"
+minLength={PASSWORD_MIN_LENGTH}
+maxLength={PASSWORD_MAX_LENGTH}
+value={form.confirmPassword}
+onChange={handleChange}
+aria-invalid={Boolean(formErrors.confirmPassword)}
+aria-describedby={formErrors.confirmPassword ? "admin-register-confirm-password-error" : undefined}
+/>
+<button
+type="button"
+className="password-toggle-btn"
+onClick={() => setShowConfirmPassword((current) => !current)}
+aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+>
+{showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+</button>
+</div>
+{formErrors.confirmPassword && (
+<small id="admin-register-confirm-password-error" className="admin-inline-error">{formErrors.confirmPassword}</small>
+)}
+</label>
+
+<button
+type="submit"
+disabled={
+saving ||
+Boolean(getEmailError(form.email)) ||
+Boolean(getPasswordError(form.password)) ||
+Boolean(getConfirmPasswordError(form.confirmPassword, form.password))
+}
+>
 {saving ? "Registering..." : "Register User"}
 </button>
 
@@ -415,7 +496,7 @@ Password strength: {passwordStrength}
 <button
 type="button"
 className="admin-delete-btn"
-onClick={() => handleDelete(admin.id)}
+onClick={() => setDeleteAdminUser(admin)}
 >
 Delete
 </button>
@@ -430,6 +511,27 @@ Delete
 </div>
 
 </div>
+
+{deleteAdminUser && (
+<div className="modal-overlay">
+<div className="modal">
+<h3>Delete Admin User</h3>
+<p>
+Are you sure you want to delete{" "}
+<strong>{deleteAdminUser.username || deleteAdminUser.email}</strong>?
+</p>
+<p>This action cannot be undone.</p>
+<div className="modal-actions">
+<button type="button" onClick={() => setDeleteAdminUser(null)}>
+Cancel
+</button>
+<button type="button" className="delete-btn" onClick={handleDelete}>
+Delete
+</button>
+</div>
+</div>
+</div>
+)}
 </div>
 
 );

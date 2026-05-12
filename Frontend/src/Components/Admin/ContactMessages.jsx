@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Search, Eye, Trash2 } from "lucide-react";
+import { CalendarDays, CheckCircle2, Search, Eye, Trash2 } from "lucide-react";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
  
@@ -19,8 +19,9 @@ const normalizeStatus = (status) => String(status || "").toLowerCase();
 const ContactMessages = () => {
   const [messages, setMessages] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [selected, setSelected] = useState(null);
   const [deleteMsg, setDeleteMsg] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -162,17 +163,37 @@ const ContactMessages = () => {
     return true;
   };
 
+  const matchesDateRange = (value) => {
+    if (!fromDate && !toDate) return true;
+    if (!value) return false;
+
+    const messageDate = new Date(value);
+    if (Number.isNaN(messageDate.getTime())) return false;
+
+    if (fromDate) {
+      const startDate = new Date(`${fromDate}T00:00:00`);
+      if (messageDate < startDate) return false;
+    }
+
+    if (toDate) {
+      const endDate = new Date(`${toDate}T23:59:59.999`);
+      if (messageDate > endDate) return false;
+    }
+
+    return true;
+  };
+
   const filtered = messages.filter((m) => {
     const matchesSearch =
       m.name?.toLowerCase().includes(search.toLowerCase()) ||
       m.email?.toLowerCase().includes(search.toLowerCase()) ||
       m.subject?.toLowerCase().includes(search.toLowerCase());
 
-    const normalizedStatus = normalizeStatus(m.status);
-    const matchesStatus =
-      statusFilter === "all" || normalizedStatus === statusFilter;
-
-    return matchesSearch && matchesStatus && matchesDateFilter(m.createdDate);
+    return (
+      matchesSearch &&
+      matchesDateFilter(m.createdDate) &&
+      matchesDateRange(m.createdDate)
+    );
   });
 
   const formatDate = (value) => {
@@ -216,16 +237,27 @@ const ContactMessages = () => {
           <option value="last7">Last 7 Days</option>
           <option value="month">This Month</option>
         </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          aria-label="Filter messages by status"
-        >
-          <option value="all">All</option>
-          <option value="read">Read</option>
-          <option value="unread">Unread</option>
-          <option value="replied">Replied</option>
-        </select>
+        <label className="messages-date-field">
+          <CalendarDays size={15} aria-hidden="true" />
+          <span>From</span>
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            aria-label="Filter messages from date"
+          />
+        </label>
+        <label className="messages-date-field">
+          <CalendarDays size={15} aria-hidden="true" />
+          <span>To</span>
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            min={fromDate || undefined}
+            aria-label="Filter messages to date"
+          />
+        </label>
       </div>
  
       {loading && <p>Loading...</p>}

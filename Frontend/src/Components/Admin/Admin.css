@@ -917,6 +917,18 @@ html, body {
   transform: translateY(-1px);
 }
 
+.admin-info-field input[aria-invalid="true"] {
+  border-color: #d9534f;
+  box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.12);
+}
+
+.admin-info-field-error {
+  color: #c0392b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
 .admin-info-actions {
   display: flex;
   align-items: center;
@@ -1259,6 +1271,11 @@ body, html {
   display: block;
 }
 
+.admin-card .form-group .error-text,
+.admin-card .error-text {
+  color: #dc2626;
+}
+
 .error-text.center {
   text-align: center;
   margin-bottom: 10px;
@@ -1322,6 +1339,11 @@ body, html {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.jobs-header .search-box {
+  width: min(520px, 100%);
+  flex: 0 1 520px;
 }
 
 .messages-header h1,
@@ -1390,6 +1412,7 @@ body, html {
 
 .messages-table th {
   font-weight: 1000;
+  text-align: center;
 }
 
 .messages-table th:nth-child(1),
@@ -1415,6 +1438,10 @@ body, html {
 .messages-table th:nth-child(5),
 .messages-table td:nth-child(5) {
   width: 8%;
+}
+
+.messages-table .table-action-group {
+  gap: 6px;
 }
 
 .message-sender-cell,
@@ -1564,8 +1591,9 @@ body, html {
 
 .applications-table .status.pending,
 .application-view-row .status.pending {
-  background: #feeceb;
-  color: #b42318;
+  background: #fff7d6;
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .applications-table .status,
@@ -1759,6 +1787,18 @@ body, html {
   line-height: 1.35;
 }
 
+.admin-word-count {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.admin-word-count.over-limit {
+  color: #c0392b;
+}
+
 .message-box {
   background: #f7f9fc;
   padding: 10px;
@@ -1871,6 +1911,19 @@ body, html {
   outline: none;
 }
 
+.application-update-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+}
+
+.application-update-btn:hover,
+.application-update-btn:focus-visible {
+  background: #15803d;
+  color: #ffffff;
+  border-color: #15803d;
+}
+
 .jobs-accordion {
   display: flex;
   flex-direction: column;
@@ -1929,6 +1982,14 @@ body, html {
   line-height: 1.6;
   border-top: 1px solid #e5e7eb;
   padding-top: 15px;
+}
+
+.expand-content pre {
+  margin: 0 0 12px;
+  font: inherit;
+  color: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .summary-grid {
@@ -2043,7 +2104,8 @@ body, html {
   min-width: 0;
 }
 
-.messages-filter-bar select {
+.messages-filter-bar select,
+.messages-date-field {
   min-width: 150px;
   padding: 10px 14px;
   border: 1px solid #dbe4ec;
@@ -2054,6 +2116,30 @@ body, html {
   box-shadow: 0 8px 18px rgba(17, 27, 49, 0.04);
 }
 
+.messages-date-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  box-sizing: border-box;
+  color: #475569;
+}
+
+.messages-date-field span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.messages-date-field input {
+  min-width: 130px;
+  border: none;
+  outline: none;
+  color: #334155;
+  font: inherit;
+  background: transparent;
+}
+
 .messages-filter-bar select:first-of-type {
   min-width: 170px;
 }
@@ -2062,6 +2148,7 @@ body, html {
   .search-box,
   .messages-filter-bar .search-box,
   .messages-filter-bar select,
+  .messages-date-field,
   .applications-wrapper .filter-bar select {
     flex: 1 1 100%;
     max-width: none;
@@ -2085,7 +2172,8 @@ body, html {
 }
 
 .applications-wrapper .filter-bar .search-box {
-  flex: 0 1 320px;
+  flex: 0 1 520px;
+  width: min(520px, 100%);
   min-width: 0;
 }
 
@@ -2471,6 +2559,20 @@ th {
   width: 320px;
   max-width: 100%;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+}
+
+.interview-feedback-search input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #334155;
+  font: inherit;
 }
 
 .interview-feedback-filter {

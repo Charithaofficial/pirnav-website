@@ -3,7 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Admin.css";
 import { buildApiUrl } from "../../config/api";
-import { LIMITS, validateEmail } from "../../utils/formValidation";
+import { LIMITS, normalizeEmailInput, validateEmail } from "../../utils/formValidation";
 import logo from "../../assets/logo.png";
 
 const SEND_OTP_API = buildApiUrl("Admin/send-otp");
@@ -13,7 +13,7 @@ const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 64;
 
 const getEmailError = (value) => {
-  const trimmedValue = value.trim();
+  const trimmedValue = normalizeEmailInput(value);
 
   if (!trimmedValue) {
     return "Email is required";
@@ -23,7 +23,7 @@ const getEmailError = (value) => {
     return `Email must be ${EMAIL_MAX_LENGTH} characters or less`;
   }
 
-  return validateEmail(trimmedValue) ? "Enter a valid email address" : "";
+  return validateEmail(trimmedValue);
 };
 
 const getOtpError = (value) => {
@@ -126,7 +126,7 @@ const AdminForgotPassword = () => {
           "Content-Type": "application/json",
           "ngrok-skip-browser-warning": "true",
         },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: normalizeEmailInput(email) }),
       });
 
       const data = await response.json().catch(() => null);
@@ -176,7 +176,7 @@ const AdminForgotPassword = () => {
           "ngrok-skip-browser-warning": "true",
         },
         body: JSON.stringify({
-          email: email.trim(),
+          email: normalizeEmailInput(email),
           otp: otp.trim(),
           newPassword,
           confirmPassword,
@@ -239,7 +239,7 @@ const AdminForgotPassword = () => {
                   maxLength={EMAIL_MAX_LENGTH}
                   value={email}
                   onChange={(event) => {
-                    const nextEmail = event.target.value;
+                    const nextEmail = normalizeEmailInput(event.target.value);
 
                     setEmail(nextEmail);
                     setErrors((current) => ({
@@ -381,7 +381,7 @@ const AdminForgotPassword = () => {
               <small className="error-text center">{errors.api}</small>
             )}
 
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading || Boolean(getEmailError(email))}>
               {loading ? "Please wait..." : otpSent ? "Validate OTP" : "Send OTP"}
             </button>
           </form>

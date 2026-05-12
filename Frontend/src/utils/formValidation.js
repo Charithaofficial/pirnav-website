@@ -1,7 +1,7 @@
 const LIMITS = {
   nameMin: 2,
   nameMax: 80,
-  emailMax: 120,
+  emailMax: 30,
   subjectMin: 3,
   subjectMax: 120,
   messageMin: 12,
@@ -11,10 +11,89 @@ const LIMITS = {
 
 const namePattern = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/;
 const companyPattern = /^[A-Za-z0-9][A-Za-z0-9 &'().,\-/]*$/;
+const emailPattern = /^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const typoEmailDomains = new Set([
+  "imal.com",
+  "imail.com",
+  "gmail.co",
+  "gmail.c",
+  "gmail.con",
+  "gmail.cm",
+  "gmail.om",
+  "gmai.co",
+  "gmai.com",
+  "gmaill.com",
+  "gail.com",
+  "gmil.com",
+  "gmial.com",
+  "gamil.com",
+  "gmali.com",
+  "gmal.com",
+  "yaho.com",
+  "yahho.com",
+  "hotmial.com",
+  "outlok.com",
+  "redifmail.com",
+]);
+const unsupportedEmailDomains = new Set([
+  "10minutemail.com",
+  "guerrillamail.com",
+  "mail.com",
+  "mailinator.com",
+  "tempmail.com",
+  "throwawaymail.com",
+  "yopmail.com",
+]);
 
 const trimValue = (value = "") => value.trim();
+export const normalizeEmailInput = (value = "") => trimValue(value).toLowerCase();
 const textTokenPattern = /[A-Za-z0-9]+/g;
 const repeatedSingleCharacterPattern = /^([A-Za-z0-9])\1+$/;
+
+const getEditDistance = (first = "", second = "") => {
+  const rows = first.length + 1;
+  const columns = second.length + 1;
+  const distances = Array.from({ length: rows }, () => Array(columns).fill(0));
+
+  for (let row = 0; row < rows; row += 1) {
+    distances[row][0] = row;
+  }
+
+  for (let column = 0; column < columns; column += 1) {
+    distances[0][column] = column;
+  }
+
+  for (let row = 1; row < rows; row += 1) {
+    for (let column = 1; column < columns; column += 1) {
+      const cost = first[row - 1] === second[column - 1] ? 0 : 1;
+      distances[row][column] = Math.min(
+        distances[row - 1][column] + 1,
+        distances[row][column - 1] + 1,
+        distances[row - 1][column - 1] + cost
+      );
+    }
+  }
+
+  return distances[first.length][second.length];
+};
+
+const isGmailTypoDomain = (domain = "") => {
+  const labels = domain.split(".");
+  const provider = labels[0] || "";
+  const extension = labels.slice(1).join(".");
+
+  if (domain === "gmail.com") {
+    return false;
+  }
+
+  if (provider === "gmail") {
+    return true;
+  }
+
+  return extension === "com" && provider.length >= 4 && provider.length <= 6
+    ? getEditDistance(provider, "gmail") <= 2
+    : false;
+};
 
 const isRepeatedSingleCharacterText = (value = "") => {
   const condensed = value.replace(/[^A-Za-z0-9]/g, "").toLowerCase();
@@ -72,23 +151,51 @@ export const validateName = (value = "") => {
 };
 
 export const validateEmail = (value = "") => {
-  const trimmed = trimValue(value);
+  const normalized = normalizeEmailInput(value);
+  const parts = normalized.split("@");
+  const localPart = parts[0] || "";
+  const domain = parts[1] || "";
+  const domainLabels = domain.split(".");
 
-  if (!trimmed || trimmed.length > LIMITS.emailMax || /\s/.test(trimmed)) {
-    return "Enter a valid email";
+  if (!normalized) {
+    return "Enter a valid email address";
   }
 
-  const parts = trimmed.split("@");
+  if (normalized.length > LIMITS.emailMax) {
+    return "Email must be less than 30 characters";
+  }
+
+  if (/\s/.test(normalized)) {
+    return "Enter a valid email address";
+  }
 
   if (
     parts.length !== 2 ||
-    !parts[0] ||
-    !parts[1] ||
-    parts[1].startsWith(".") ||
-    parts[1].endsWith(".") ||
-    !parts[1].includes(".")
+    !localPart ||
+    !domain ||
+    /^\d+$/.test(localPart) ||
+    normalized.includes("..") ||
+    normalized.startsWith(".") ||
+    normalized.endsWith(".") ||
+    domain.startsWith(".") ||
+    domain.endsWith(".") ||
+    !domain.includes(".") ||
+    domainLabels.some((label) => !label || label.startsWith("-") || label.endsWith("-")) ||
+    !emailPattern.test(normalized)
   ) {
-    return "Enter a valid email";
+    return "Enter a valid email address";
+  }
+
+  if (typoEmailDomains.has(domain)) {
+    return "Please enter a valid email domain";
+  }
+
+  if (isGmailTypoDomain(domain)) {
+    return "Please enter a valid email domain";
+  }
+
+  if (unsupportedEmailDomains.has(domain)) {
+    return "This email domain is not supported";
   }
 
   return "";
@@ -165,7 +272,10 @@ export const hasErrors = (errors) =>
 
 export const sanitizeFormPayload = (values) =>
   Object.fromEntries(
-    Object.entries(values).map(([key, value]) => [key, trimValue(value)])
+    Object.entries(values).map(([key, value]) => [
+      key,
+      key.toLowerCase().includes("email") ? normalizeEmailInput(value) : trimValue(value),
+    ])
   );
 
 export { LIMITS };

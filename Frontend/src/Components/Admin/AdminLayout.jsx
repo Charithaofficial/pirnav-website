@@ -162,7 +162,7 @@ function AdminNavbar({ collapsed, onSidebarToggle, dropdownOpen, onDropdownToggl
             <span className="admin-avatar">{getProfileInitial(profile.username)}</span>
             <span className="admin-profile-copy">
               <strong>{profile.username || "Admin"}</strong>
-              <small>{profile.role || "Administrator"}</small>
+              <small>{profile.email || "admin@example.com"}</small>
             </span>
             <ChevronDown size={18} className={dropdownOpen ? "rotate" : ""} aria-hidden="true" />
           </button>

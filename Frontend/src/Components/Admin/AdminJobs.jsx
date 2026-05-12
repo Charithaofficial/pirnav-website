@@ -66,8 +66,18 @@ const initialJobErrors = {
   mandatorySkills: "",
 };
 
+const textFieldWordLimits = {
+  jobDescription: 500,
+  keyResponsibilities: 300,
+  mandatorySkills: 150,
+};
+
 const hasLetters = (value = "") => /[A-Za-z]/.test(value);
 const hasDropdownValue = (value = "") => value.trim().length > 0;
+const getWordCount = (value = "") => {
+  const words = value.trim().match(/\S+/g);
+  return words ? words.length : 0;
+};
 
 const getSelectOptions = (options, currentValue) => {
   const trimmedValue = currentValue.trim();
@@ -117,18 +127,27 @@ const validateJobField = (name, value) => {
       }
       return "";
     case "jobDescription":
-      if (!trimmed || trimmed.length < 30 || trimmed.length > 3000 || !hasLetters(trimmed)) {
+      if (!trimmed || trimmed.length < 30 || !hasLetters(trimmed)) {
         return "Enter a valid job description";
+      }
+      if (trimmed.length > 3000 || getWordCount(trimmed) > textFieldWordLimits.jobDescription) {
+        return `Job description must be ${textFieldWordLimits.jobDescription} words or less`;
       }
       return "";
     case "keyResponsibilities":
-      if (!trimmed || trimmed.length < 20 || trimmed.length > 3000 || !hasLetters(trimmed)) {
+      if (!trimmed || trimmed.length < 20 || !hasLetters(trimmed)) {
         return "Enter valid key responsibilities";
+      }
+      if (trimmed.length > 3000 || getWordCount(trimmed) > textFieldWordLimits.keyResponsibilities) {
+        return `Key responsibilities must be ${textFieldWordLimits.keyResponsibilities} words or less`;
       }
       return "";
     case "mandatorySkills":
-      if (!trimmed || trimmed.length < 10 || trimmed.length > 1500 || !hasLetters(trimmed)) {
+      if (!trimmed || trimmed.length < 10 || !hasLetters(trimmed)) {
         return "Enter valid mandatory skills";
+      }
+      if (trimmed.length > 1500 || getWordCount(trimmed) > textFieldWordLimits.mandatorySkills) {
+        return `Mandatory skills must be ${textFieldWordLimits.mandatorySkills} words or less`;
       }
       return "";
     default:
@@ -502,6 +521,9 @@ const AdminJobs = () => {
               aria-invalid={Boolean(getFieldError("jobDescription"))}
             />
             {getFieldError("jobDescription") ? <small className="admin-inline-error">{getFieldError("jobDescription")}</small> : null}
+            <small className={`admin-word-count ${getWordCount(form.jobDescription) > textFieldWordLimits.jobDescription ? "over-limit" : ""}`}>
+              {getWordCount(form.jobDescription)} / {textFieldWordLimits.jobDescription} words
+            </small>
             </div>
             <div className="admin-form-field">
             <label htmlFor="admin-job-responsibilities">Key Responsibilities</label>
@@ -514,6 +536,9 @@ const AdminJobs = () => {
               aria-invalid={Boolean(getFieldError("keyResponsibilities"))}
             />
             {getFieldError("keyResponsibilities") ? <small className="admin-inline-error">{getFieldError("keyResponsibilities")}</small> : null}
+            <small className={`admin-word-count ${getWordCount(form.keyResponsibilities) > textFieldWordLimits.keyResponsibilities ? "over-limit" : ""}`}>
+              {getWordCount(form.keyResponsibilities)} / {textFieldWordLimits.keyResponsibilities} words
+            </small>
             </div>
             <div className="admin-form-field">
             <label htmlFor="admin-job-skills">Mandatory Skills</label>
@@ -528,6 +553,9 @@ const AdminJobs = () => {
               aria-invalid={Boolean(getFieldError("mandatorySkills"))}
             />
             {getFieldError("mandatorySkills") ? <small className="admin-inline-error">{getFieldError("mandatorySkills")}</small> : null}
+            <small className={`admin-word-count ${getWordCount(form.mandatorySkills) > textFieldWordLimits.mandatorySkills ? "over-limit" : ""}`}>
+              {getWordCount(form.mandatorySkills)} / {textFieldWordLimits.mandatorySkills} words
+            </small>
             </div>
             <div className="modal-actions">
               <button className="job-modal-cancel-btn" onClick={() => {
