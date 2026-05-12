@@ -1,7 +1,7 @@
 const LIMITS = {
   nameMin: 2,
   nameMax: 80,
-  emailMax: 30,
+  emailMax: 50,
   subjectMin: 3,
   subjectMax: 120,
   messageMin: 12,
@@ -12,7 +12,7 @@ const LIMITS = {
 
 const namePattern = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/;
 const companyPattern = /^[A-Za-z0-9][A-Za-z0-9 &'().,\-/]*$/;
-const emailPattern = /^[a-zA-Z0-9._%+-]{1,20}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const emailPattern = /^[a-zA-Z0-9._%+-]{1,40}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const typoEmailDomains = new Set([
   "imal.com",
   "imail.com",
@@ -167,7 +167,7 @@ export const validateEmail = (value = "") => {
   }
 
   if (normalized.length > LIMITS.emailMax) {
-    return "Email must be less than 30 characters";
+    return `Email must be ${LIMITS.emailMax} characters or less`;
   }
 
   if (/\s/.test(normalized)) {
