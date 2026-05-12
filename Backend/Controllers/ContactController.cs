@@ -7,6 +7,7 @@ using Pirnav.API.Models;
 using Pirnav.API.Services;
 using System.Globalization;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Text.RegularExpressions;
 
 namespace Pirnav.API.Controllers
 {
@@ -31,6 +32,93 @@ namespace Pirnav.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SendMessage(ContactMessage model)
         {
+            // ================= REQUIRED FIELD VALIDATIONS =================
+
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Name is required."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Email is required."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Subject))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Subject is required."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Message))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Message is required."
+                });
+            }
+
+
+
+            if (model.Name.Length < 3)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Please enter a valid name."
+                });
+            }
+
+
+            if (model.Message.Length < 5)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Message is too short."
+                });
+            }
+
+            // ================= EMAIL FORMAT VALIDATION =================
+
+            bool isValidEmail =
+                System.Text.RegularExpressions.Regex.IsMatch(
+                    model.Email,
+                    @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                );
+
+            if (!isValidEmail)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Please enter a valid email address."
+                });
+            }
+
+            // ================= DOMAIN EXISTENCE VALIDATION =================
+
+            if (!IsValidEmailDomain(model.Email))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Please enter a valid email domain."
+                });
+            }
+
 
             if (EmailHelper.IsBlockedDomain(model.Email))
             {
@@ -272,5 +360,21 @@ Warm regards,<br/>
 
             return Ok(new { unread = count });
         }
+
+
+        private bool IsValidEmailDomain(string email)
+{
+    try
+    {
+        var domain = email.Split('@').Last();
+
+        return System.Net.Dns
+            .GetHostEntry(domain) != null;
+    }
+    catch
+    {
+        return false;
+    }
+}
     }
 }

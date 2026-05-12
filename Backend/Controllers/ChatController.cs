@@ -23,23 +23,34 @@ namespace Pirnav.API.Controllers
 
             if (request == null || string.IsNullOrWhiteSpace(request.Message))
             {
-                return BadRequest(new
+                return Ok(new
                 {
                     success = false,
-                    reply = "Message cannot be empty."
+                    reply = "Please enter a message."
                 });
             }
 
             var userMessage = request.Message.Trim();
 
-            // ================= MINIMUM LENGTH =================
+            // ================= SESSION CHECK =================
 
-            if (userMessage.Length < 3)
+            if (string.IsNullOrWhiteSpace(request.SessionId))
             {
                 return Ok(new
                 {
                     success = false,
-                    reply = "Please enter a valid message."
+                    reply = "Session expired. Please restart chat."
+                });
+            }
+
+            // ================= MAX LENGTH =================
+
+            if (userMessage.Length > 500)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    reply = "Message is too long."
                 });
             }
 
@@ -54,6 +65,39 @@ namespace Pirnav.API.Controllers
                 });
             }
 
+            // ================= ALLOW COMMON GREETINGS =================
+
+            var greetings = new[]
+            {
+                "hi",
+                "hello",
+                "hey",
+                "hii",
+                "helo"
+            };
+
+            if (greetings.Contains(userMessage.ToLower()))
+            {
+                var greetingResponse =
+                    await _chatService.GetReply(
+                        userMessage,
+                        request.SessionId
+                    );
+
+                return Ok(greetingResponse);
+            }
+
+            // ================= MINIMUM LENGTH =================
+
+            if (userMessage.Length < 3)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    reply = "Please enter a valid message."
+                });
+            }
+
             // ================= BLOCK REPEATED CHARACTERS =================
 
             if (Regex.IsMatch(userMessage.ToLower(), @"^(.)\1+$"))
@@ -65,7 +109,7 @@ namespace Pirnav.API.Controllers
                 });
             }
 
-            // ================= BLOCK RANDOM KEYBOARD INPUTS =================
+            // ================= INVALID INPUTS =================
 
             var invalidPatterns = new[]
             {
@@ -83,8 +127,6 @@ namespace Pirnav.API.Controllers
                 "mmm",
                 "nnn",
                 "pr",
-                "ok",
-                "hi",
                 "hello1",
                 "mmnnjj",
                 "123",
@@ -101,7 +143,7 @@ namespace Pirnav.API.Controllers
                 });
             }
 
-            // ================= BLOCK TOO MANY NUMBERS =================
+            // ================= TOO MANY NUMBERS =================
 
             int digitCount = userMessage.Count(char.IsDigit);
 
@@ -114,14 +156,15 @@ namespace Pirnav.API.Controllers
                 });
             }
 
-            // ================= BLOCK RANDOM MIXED STRINGS =================
+            // ================= BLOCK RANDOM STRINGS =================
 
             if (Regex.IsMatch(userMessage, @"^[a-zA-Z]{3,}$"))
             {
                 var vowels = "aeiouAEIOU";
-                int vowelCount = userMessage.Count(c => vowels.Contains(c));
 
-                // Example: mmnnjj, xzrtpl
+                int vowelCount =
+                    userMessage.Count(c => vowels.Contains(c));
+
                 if (vowelCount == 0)
                 {
                     return Ok(new
@@ -132,27 +175,15 @@ namespace Pirnav.API.Controllers
                 }
             }
 
-            // ================= MAX LENGTH PROTECTION =================
-
-            if (userMessage.Length > 500)
-            {
-                return Ok(new
-                {
-                    success = false,
-                    reply = "Message is too long."
-                });
-            }
-
-
-
             // ================= EMAIL VALIDATION =================
 
-            if (
+            bool looksLikeEmail =
                 userMessage.Contains("@") ||
                 userMessage.Contains("gmail") ||
                 userMessage.Contains("yahoo") ||
-                userMessage.Contains("outlook")
-            )
+                userMessage.Contains("outlook");
+
+            if (looksLikeEmail)
             {
                 bool isValidEmail = Regex.IsMatch(
                     userMessage,
@@ -169,12 +200,13 @@ namespace Pirnav.API.Controllers
                 }
             }
 
-          
-
             // ================= CALL CHAT SERVICE =================
 
-
-            var response = await _chatService.GetReply(userMessage, request.SessionId);
+            var response =
+                await _chatService.GetReply(
+                    userMessage,
+                    request.SessionId
+                );
 
             // ================= SAFE RESPONSE =================
 
@@ -187,10 +219,16 @@ namespace Pirnav.API.Controllers
                 });
             }
 
+            if (string.IsNullOrWhiteSpace(response.Reply))
+            {
+                return Ok(new
+                {
+                    success = false,
+                    reply = "Unable to process your request."
+                });
+            }
+
             return Ok(response);
         }
-
-
-
     }
 }
