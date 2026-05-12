@@ -160,8 +160,9 @@
 
 .global-chat-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.625rem;
+  grid-template-columns: minmax(0, 1fr) 2.15rem;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0 1rem 1rem;
 }
 
@@ -181,20 +182,27 @@
 }
 
 .global-chat-form button {
-  width: 2.9rem;
-  height: 2.9rem;
+  width: 2.15rem;
+  height: 2.15rem;
   display: grid;
   place-items: center;
+  align-self: center;
   border: none;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+  border-radius: 999px;
+  background: var(--theme-primary);
   color: #ffffff;
+  font-size: 0.8rem;
   transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
 .global-chat-form button:hover,
 .global-chat-toggle:hover {
   transform: translateY(-1px);
+}
+
+.global-chat-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .global-chat-toggle {

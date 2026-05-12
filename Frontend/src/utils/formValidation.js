@@ -6,6 +6,7 @@ const LIMITS = {
   subjectMax: 120,
   messageMin: 12,
   messageMax: 1000,
+  messageWordMax: 120,
   companyMax: 120,
 };
 
@@ -47,6 +48,10 @@ const unsupportedEmailDomains = new Set([
 
 const trimValue = (value = "") => value.trim();
 export const normalizeEmailInput = (value = "") => trimValue(value).toLowerCase();
+export const getWordCount = (value = "") => {
+  const words = trimValue(value).match(/\S+/g);
+  return words ? words.length : 0;
+};
 const textTokenPattern = /[A-Za-z0-9]+/g;
 const repeatedSingleCharacterPattern = /^([A-Za-z0-9])\1+$/;
 
@@ -218,6 +223,10 @@ export const validateSubject = (value = "") => {
 
 export const validateMessage = (value = "") => {
   const trimmed = trimValue(value);
+
+  if (getWordCount(trimmed) > LIMITS.messageWordMax) {
+    return `Message must be ${LIMITS.messageWordMax} words or less`;
+  }
 
   if (
     !trimmed ||

@@ -118,6 +118,17 @@
   font-weight: 600;
 }
 
+.shared-contact-word-count {
+  justify-self: end;
+  color: #607287 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+}
+
+.shared-contact-word-count.over-limit {
+  color: #b42332 !important;
+}
+
 .shared-contact-form button {
   min-height: 3.25rem;
   width: 100%;

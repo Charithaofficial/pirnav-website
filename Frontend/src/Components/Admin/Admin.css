@@ -1410,7 +1410,8 @@ body, html {
   vertical-align: middle;
 }
 
-.messages-table th {
+.messages-table th,
+.messages-table thead th {
   font-weight: 1000;
   text-align: center;
 }

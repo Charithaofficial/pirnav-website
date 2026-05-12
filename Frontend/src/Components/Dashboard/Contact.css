@@ -144,12 +144,12 @@
 }
 
 .contact-section {
-  max-width: 1240px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 54px 22px 76px;
+  padding: 42px 22px 64px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 26px;
+  gap: 24px;
   align-items: start;
 }
 
@@ -196,7 +196,7 @@
 
 .left-image {
   position: relative;
-  min-height: 100%;
+  min-height: 28rem;
   border-radius: 26px;
   overflow: hidden;
   background: #0e223b;
@@ -230,7 +230,7 @@
   position: relative;
   z-index: 1;
   min-height: 100%;
-  padding: 28px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -277,9 +277,9 @@
 }
 
 .left-image-overlay h3 {
-  margin: 18px 0 10px;
+  margin: 14px 0 8px;
   color: #ffffff;
-  font-size: 2rem;
+  font-size: 1.72rem;
   line-height: 1.05;
   letter-spacing: -0.03em;
 }
@@ -288,17 +288,17 @@
   margin: 0;
   max-width: 320px;
   color: rgba(235, 243, 255, 0.82);
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
 .image-contact-list {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .image-contact-item {
-  padding: 14px 16px;
-  border-radius: 18px;
+  padding: 11px 14px;
+  border-radius: 16px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -326,6 +326,40 @@
 
 .contact-form-wrapper {
   align-self: stretch;
+  padding: 1rem;
+}
+
+.contact-form-wrapper .shared-contact-form-header h2 {
+  font-size: clamp(1.55rem, 2vw, 1.95rem);
+}
+
+.contact-form-wrapper .shared-contact-form-header p {
+  margin-top: 0.55rem;
+  line-height: 1.5;
+}
+
+.contact-form-wrapper .shared-contact-form {
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.contact-form-wrapper .shared-contact-field {
+  gap: 0.35rem;
+}
+
+.contact-form-wrapper .shared-contact-field input,
+.contact-form-wrapper .shared-contact-field textarea {
+  padding: 0.68rem 0.95rem;
+  border-radius: 0.9rem;
+}
+
+.contact-form-wrapper .shared-contact-field textarea {
+  height: 5.35rem;
+  min-height: 5.35rem;
+}
+
+.contact-form-wrapper .shared-contact-form button {
+  min-height: 2.85rem;
 }
 
 .show-form {

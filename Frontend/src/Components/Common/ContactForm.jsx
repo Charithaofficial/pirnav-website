@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   hasErrors,
   LIMITS,
+  getWordCount,
   normalizeEmailInput,
   sanitizeFormPayload,
   validateContactForm,
@@ -40,6 +41,7 @@ function ContactForm({
       ),
     [errors, touched]
   );
+  const messageWordCount = getWordCount(formData.message);
 
   useEffect(() => {
     if (status !== "success") {
@@ -205,10 +207,17 @@ function ContactForm({
             onBlur={handleBlur}
             aria-invalid={Boolean(visibleErrors.message)}
           />
+          <small
+            className={`shared-contact-word-count ${
+              messageWordCount > LIMITS.messageWordMax ? "over-limit" : ""
+            }`}
+          >
+            {messageWordCount} / {LIMITS.messageWordMax} words
+          </small>
           {visibleErrors.message ? <small>{visibleErrors.message}</small> : null}
         </label>
 
-        <button type="submit" disabled={loading || Boolean(errors.email)}>
+        <button type="submit" disabled={loading || Boolean(errors.email) || Boolean(errors.message)}>
           {loading ? "Sending..." : buttonLabel}
         </button>
 
