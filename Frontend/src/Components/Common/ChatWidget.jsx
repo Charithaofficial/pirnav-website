@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaComments, FaPaperPlane, FaRobot, FaTimes } from "react-icons/fa";
 import "./ChatWidget.css";
 import { buildApiUrl, jsonApiHeaders } from "../../config/api";
-import { validateName } from "../../utils/formValidation";
+import { normalizeEmailInput, validateEmail, validateName } from "../../utils/formValidation";
 
 const CHAT_API = buildApiUrl("Chat");
 const SESSION_STORAGE_KEY = "pirnav-chat-session-id";
@@ -101,6 +101,22 @@ const isNameStep = (step, messages) => {
     ?.text?.toLowerCase() || "";
 
   return normalizedStep.includes("name") || lastAssistantMessage.includes("your name");
+};
+
+const isEmailStep = (step, messages) => {
+  const normalizedStep = String(step || "").toLowerCase();
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant")
+    ?.text?.toLowerCase() || "";
+
+  return (
+    normalizedStep.includes("email") ||
+    normalizedStep.includes("mail") ||
+    lastAssistantMessage.includes("email") ||
+    lastAssistantMessage.includes("mail id") ||
+    lastAssistantMessage.includes("mail address")
+  );
 };
 
 function ChatWidget() {
@@ -241,6 +257,28 @@ function ChatWidget() {
         setChatInput("");
         return;
       }
+    }
+
+    if (isEmailStep(currentStep, chatMessages)) {
+      const normalizedEmail = normalizeEmailInput(trimmedInput);
+      const emailError = validateEmail(normalizedEmail);
+
+      if (emailError) {
+        setChatMessages((current) => [
+          ...current,
+          { id: Date.now(), role: "user", text: trimmedInput },
+          {
+            id: Date.now() + 1,
+            role: "assistant",
+            text: emailError,
+          },
+        ]);
+        setChatInput("");
+        return;
+      }
+
+      requestChatReply(normalizedEmail);
+      return;
     }
 
     requestChatReply(chatInput);
