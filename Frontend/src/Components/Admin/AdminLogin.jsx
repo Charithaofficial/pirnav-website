@@ -324,7 +324,7 @@ const AdminLogin = () => {
               <small className="error-text center">{errors.api}</small>
             )}
  
-            <button type="submit" disabled={loading || Boolean(getIdentifierError(identifier))}>
+            <button type="submit" className="admin-login-submit-btn" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>

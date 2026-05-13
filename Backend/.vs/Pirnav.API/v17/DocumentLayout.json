@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\services\\chatservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -19,8 +15,12 @@
       "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:controllers\\chatcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:models\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{ABED9D1A-3A23-5679-D17A-F1195E8582FE}|Pirnav.API.csproj|c:\\users\\admin\\downloads\\pirnav-backend\\pirnav.api\\models\\chatlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -161,56 +161,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "ChatController.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Controllers\\ChatController.cs",
               "RelativeDocumentMoniker": "Controllers\\ChatController.cs",
               "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Controllers\\ChatController.cs",
               "RelativeToolTip": "Controllers\\ChatController.cs",
-              "ViewState": "AgIAANgAAAAAAAAAAAAIwOMAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAowPYAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T12:25:39.143Z"
+              "WhenOpened": "2026-05-08T12:25:39.143Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Job.cs",
-              "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\Job.cs",
-              "RelativeDocumentMoniker": "Models\\Job.cs",
-              "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\Job.cs",
-              "RelativeToolTip": "Models\\Job.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAswBsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T08:56:30.702Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAIwCwAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAAMBAAAAAAAAAAAowA0BAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-05-07T12:14:10.36Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Models\\AppDbContext.cs",
               "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\AppDbContext.cs",
               "RelativeToolTip": "Models\\AppDbContext.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAA9wBwAAABEAAAAAAAAAA==",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAtwJYAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-08T09:07:49.501Z"
+              "WhenOpened": "2026-05-08T09:07:49.501Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -226,28 +216,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAkwBEAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-05-08T08:53:36.363Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "ChatService.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Services\\ChatService.cs",
               "RelativeDocumentMoniker": "Services\\ChatService.cs",
               "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Services\\ChatService.cs",
               "RelativeToolTip": "Services\\ChatService.cs",
-              "ViewState": "AgIAAJcBAAAAAAAAAAAkwKEBAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAHUCAAAAAAAAAAAowHoCAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-12T07:31:28.64Z"
+              "WhenOpened": "2026-05-12T07:31:28.64Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Job.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\Job.cs",
+              "RelativeDocumentMoniker": "Models\\Job.cs",
+              "ToolTip": "C:\\Users\\Admin\\Downloads\\pirnav-backend\\Pirnav.API\\Models\\Job.cs",
+              "RelativeToolTip": "Models\\Job.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAswBsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-08T08:56:30.702Z"
             },
             {
               "$type": "Document",

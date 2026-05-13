@@ -1899,15 +1899,6 @@ body, html {
   outline: none;
 }
 
-.job-modal-action-btn {
-  background: #15803d;
-}
-
-.job-modal-action-btn:hover,
-.job-modal-action-btn:focus-visible {
-  background: #166534;
-  outline: none;
-}
 
 .delete-btn,
 .admin-delete-btn {

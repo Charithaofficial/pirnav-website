@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Pirnav.API.Models;
 using Pirnav.API.Services;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Pirnav.API.Controllers
 {
@@ -13,224 +14,247 @@ namespace Pirnav.API.Controllers
     {
         private readonly ChatService _chatService;
 
-        public ChatController(ChatService chatService)
+
+    public ChatController(ChatService chatService)
         {
             _chatService = chatService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMessage([FromBody] ChatRequest request)
+        public async Task<IActionResult> SendMessage(
+            [FromBody] ChatRequest request)
         {
-            // ================= NULL / EMPTY CHECK =================
-
-            if (request == null || string.IsNullOrWhiteSpace(request.Message))
+            try
             {
-                return Ok(new
+                // ================= NULL CHECK =================
+
+                if (request == null)
                 {
-                    success = false,
-                    reply = "Please enter a message."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Invalid request."
+                    });
+                }
 
-            var userMessage = request.Message.Trim();
+                // ================= MESSAGE CHECK =================
 
-            // ================= SESSION CHECK =================
-
-            if (string.IsNullOrWhiteSpace(request.SessionId))
-            {
-                return Ok(new
+                if (string.IsNullOrWhiteSpace(request.Message))
                 {
-                    success = false,
-                    reply = "Session expired. Please restart chat."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Please enter a message."
+                    });
+                }
 
-            // ================= MAX LENGTH =================
+                // ================= SESSION CHECK =================
 
-            if (userMessage.Length > 500)
-            {
-                return Ok(new
+                if (string.IsNullOrWhiteSpace(request.SessionId))
                 {
-                    success = false,
-                    reply = "Message is too long."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Session expired. Please restart chat."
+                    });
+                }
 
-            // ================= BLOCK ONLY SYMBOLS =================
+                // ================= CLEAN MESSAGE =================
 
-            if (!Regex.IsMatch(userMessage, @"[a-zA-Z0-9]"))
-            {
-                return Ok(new
+                var userMessage = request.Message.Trim();
+
+                userMessage = Regex.Replace(
+                    userMessage,
+                    @"\s+",
+                    " ");
+
+                // ================= MAX LENGTH =================
+
+                if (userMessage.Length > 1000)
                 {
-                    success = false,
-                    reply = "Please enter meaningful text."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Message is too long."
+                    });
+                }
 
-            // ================= ALLOW COMMON GREETINGS =================
+                // ================= BLOCK EMPTY SYMBOLS =================
 
-            var greetings = new[]
-            {
-                "hi",
-                "hello",
-                "hey",
-                "hii",
-                "helo"
-            };
-
-            if (greetings.Contains(userMessage.ToLower()))
-            {
-                var greetingResponse =
-                    await _chatService.GetReply(
-                        userMessage,
-                        request.SessionId
-                    );
-
-                return Ok(greetingResponse);
-            }
-
-            // ================= MINIMUM LENGTH =================
-
-            if (userMessage.Length < 3)
-            {
-                return Ok(new
+                if (!Regex.IsMatch(userMessage, @"[a-zA-Z0-9]"))
                 {
-                    success = false,
-                    reply = "Please enter a valid message."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Please enter meaningful text."
+                    });
+                }
 
-            // ================= BLOCK REPEATED CHARACTERS =================
+                // ================= BLOCK SCRIPT ATTACKS =================
 
-            if (Regex.IsMatch(userMessage.ToLower(), @"^(.)\1+$"))
-            {
-                return Ok(new
+                if (Regex.IsMatch(
+                    userMessage,
+                    @"<script|</script|SELECT |DROP TABLE|INSERT INTO|DELETE FROM|UPDATE ",
+                    RegexOptions.IgnoreCase))
                 {
-                    success = false,
-                    reply = "Please enter meaningful text."
-                });
-            }
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Invalid input detected."
+                    });
+                }
 
-            // ================= INVALID INPUTS =================
+                // ================= MINIMUM LENGTH =================
 
-            var invalidPatterns = new[]
-            {
+                if (userMessage.Length < 2)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Please enter a valid message."
+                    });
+                }
+
+                // ================= BLOCK REPEATED CHARS =================
+
+                if (Regex.IsMatch(
+                    userMessage.ToLower(),
+                    @"^(.)\1+$"))
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Please enter meaningful text."
+                    });
+                }
+
+                // ================= INVALID INPUTS =================
+
+                var invalidPatterns = new[]
+                {
                 "abc",
                 "abcd",
                 "asdf",
                 "asdfgh",
                 "qwerty",
                 "zxcv",
-                "test",
-                "testing",
                 "aaa",
                 "bbb",
                 "ccc",
                 "mmm",
                 "nnn",
-                "pr",
-                "hello1",
-                "mmnnjj",
                 "123",
                 "111",
                 "000"
             };
 
-            if (invalidPatterns.Contains(userMessage.ToLower()))
-            {
-                return Ok(new
-                {
-                    success = false,
-                    reply = "Please enter meaningful text."
-                });
-            }
-
-            // ================= TOO MANY NUMBERS =================
-
-            int digitCount = userMessage.Count(char.IsDigit);
-
-            if (digitCount > userMessage.Length / 2)
-            {
-                return Ok(new
-                {
-                    success = false,
-                    reply = "Please enter meaningful text."
-                });
-            }
-
-            // ================= BLOCK RANDOM STRINGS =================
-
-            if (Regex.IsMatch(userMessage, @"^[a-zA-Z]{3,}$"))
-            {
-                var vowels = "aeiouAEIOU";
-
-                int vowelCount =
-                    userMessage.Count(c => vowels.Contains(c));
-
-                if (vowelCount == 0)
+                if (invalidPatterns.Contains(
+                    userMessage.ToLower()))
                 {
                     return Ok(new
                     {
                         success = false,
-                        reply = "Please enter a proper message."
+                        reply = "Please enter meaningful text."
                     });
                 }
-            }
 
-            // ================= EMAIL VALIDATION =================
+                // ================= TOO MANY NUMBERS =================
 
-            bool looksLikeEmail =
-                userMessage.Contains("@") ||
-                userMessage.Contains("gmail") ||
-                userMessage.Contains("yahoo") ||
-                userMessage.Contains("outlook");
+                int digitCount =
+                    userMessage.Count(char.IsDigit);
 
-            if (looksLikeEmail)
-            {
-                bool isValidEmail = Regex.IsMatch(
-                    userMessage,
-                    @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                );
-
-                if (!isValidEmail)
+                if (digitCount > userMessage.Length / 2)
                 {
                     return Ok(new
                     {
                         success = false,
-                        reply = "Please enter a valid email address."
+                        reply = "Please enter meaningful text."
                     });
                 }
-            }
 
-            // ================= CALL CHAT SERVICE =================
+                // ================= BLOCK RANDOM STRINGS =================
 
-            var response =
-                await _chatService.GetReply(
+                if (Regex.IsMatch(
                     userMessage,
-                    request.SessionId
-                );
+                    @"^[a-zA-Z]{4,}$"))
+                {
+                    var vowels = "aeiouAEIOU";
 
-            // ================= SAFE RESPONSE =================
+                    int vowelCount =
+                        userMessage.Count(
+                            c => vowels.Contains(c));
 
-            if (response == null)
+                    if (vowelCount == 0)
+                    {
+                        return Ok(new
+                        {
+                            success = false,
+                            reply = "Please enter a proper message."
+                        });
+                    }
+                }
+
+                // ================= EMAIL VALIDATION =================
+
+                bool looksLikeEmail =
+                    userMessage.Contains("@");
+
+                if (looksLikeEmail)
+                {
+                    bool isValidEmail = Regex.IsMatch(
+                        userMessage,
+                        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    );
+
+                    if (!isValidEmail)
+                    {
+                        return Ok(new
+                        {
+                            success = false,
+                            reply = "Please enter a valid email address."
+                        });
+                    }
+                }
+
+                // ================= CHAT SERVICE =================
+
+                var response =
+                    await _chatService.GetReply(
+                        userMessage,
+                        request.SessionId);
+
+                // ================= RESPONSE SAFETY =================
+
+                if (response == null)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Unable to process your request right now."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(response.Reply))
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        reply = "Unable to process your request."
+                    });
+                }
+
+                return Ok(response);
+            }
+            catch
             {
                 return Ok(new
                 {
                     success = false,
-                    reply = "Unable to process your request right now."
+                    reply = "Something went wrong. Please try again later."
                 });
             }
-
-            if (string.IsNullOrWhiteSpace(response.Reply))
-            {
-                return Ok(new
-                {
-                    success = false,
-                    reply = "Unable to process your request."
-                });
-            }
-
-            return Ok(response);
         }
     }
+
+
 }

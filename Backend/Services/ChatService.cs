@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Net;
 
 namespace Pirnav.API.Services
 {
@@ -12,11 +13,10 @@ namespace Pirnav.API.Services
         private readonly AppDbContext _context;
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
-
-        public ChatService(
-            AppDbContext context,
-            EmailService emailService,
-            IConfiguration configuration)
+    public ChatService(
+        AppDbContext context,
+        EmailService emailService,
+        IConfiguration configuration)
         {
             _context = context;
             _emailService = emailService;
@@ -29,35 +29,37 @@ namespace Pirnav.API.Services
 
         private static readonly Dictionary<string, Lead> UserData = new();
 
+        private static readonly Dictionary<string, DateTime> SessionActivity = new();
+
         // ================= FAQ RESPONSES =================
 
         private static readonly Dictionary<string, string> FaqResponses = new()
+    {
         {
-            {
-                "services",
-                "We provide Web Development, Mobile App Development, UI/UX Design, Staffing Solutions, Cloud Solutions, AI Services, and Enterprise Software Development."
-            },
-            {
-                "company",
-                "Pirnav Software Solutions Pvt Ltd delivers innovative software and staffing solutions for global businesses."
-            },
-            {
-                "location",
-                "Pirnav operates across India, USA, UK, and Canada."
-            },
-            {
-                "careers",
-                "You can explore opportunities through our Careers page or connect with our HR team."
-            },
-            {
-                "contact",
-                "You can reach our team anytime at hr@pirnav.com"
-            },
-            {
-                "technologies",
-                "We work with .NET, React, Angular, Node.js, Flutter, Azure, AWS, SQL, AI/ML, and enterprise cloud technologies."
-            }
-        };
+            "services",
+            "We provide Web Development, Mobile App Development, UI/UX Design, Staffing Solutions, Cloud Solutions, AI Services, and Enterprise Software Development."
+        },
+        {
+            "company",
+            "Pirnav Software Solutions Pvt Ltd delivers innovative software and staffing solutions for global businesses."
+        },
+        {
+            "location",
+            "Pirnav operates across India, USA, UK, and Canada."
+        },
+        {
+            "careers",
+            "You can explore opportunities through our Careers page or connect with our HR team."
+        },
+        {
+            "contact",
+            "You can reach our team anytime at hr@pirnav.com"
+        },
+        {
+            "technologies",
+            "We work with .NET, React, Angular, Node.js, Flutter, Azure, AWS, SQL, AI/ML, and enterprise cloud technologies."
+        }
+    };
 
         // ================= MAIN METHOD =================
 
@@ -89,7 +91,11 @@ namespace Pirnav.API.Services
 
             message = message.Trim();
 
-            // ================= ANTI-SPAM / SECURITY =================
+            // ================= SECURITY =================
+
+            //message = WebUtility.HtmlEncode(message);
+
+            // ================= ANTI-SQL/XSS =================
 
             if (Regex.IsMatch(
                 message,
@@ -111,6 +117,22 @@ namespace Pirnav.API.Services
             if (!UserData.ContainsKey(sessionId))
                 UserData[sessionId] = new Lead();
 
+            SessionActivity[sessionId] = DateTime.UtcNow;
+
+            // ================= CLEAN OLD SESSIONS =================
+
+            var expiredSessions = SessionActivity
+                .Where(x => x.Value < DateTime.UtcNow.AddMinutes(-30))
+                .Select(x => x.Key)
+                .ToList();
+
+            foreach (var expiredSession in expiredSessions)
+            {
+                UserSteps.Remove(expiredSession);
+                UserData.Remove(expiredSession);
+                SessionActivity.Remove(expiredSession);
+            }
+
             var step = UserSteps[sessionId];
 
             var lowerMessage = message.ToLower();
@@ -131,9 +153,9 @@ namespace Pirnav.API.Services
                     "route",
                     new List<string>
                     {
-                        "Development",
-                        "Staffing",
-                        "Support"
+                    "Development",
+                    "Staffing",
+                    "Support"
                     });
             }
 
@@ -150,13 +172,13 @@ namespace Pirnav.API.Services
                     "route",
                     new List<string>
                     {
-                        "Development",
-                        "Staffing",
-                        "Support"
+                    "Development",
+                    "Staffing",
+                    "Support"
                     });
             }
 
-            // ================= FAQ ENGINE =================
+            // ================= FAQ =================
 
             foreach (var faq in FaqResponses)
             {
@@ -169,19 +191,17 @@ namespace Pirnav.API.Services
                         "route",
                         new List<string>
                         {
-                            "Development",
-                            "Staffing",
-                            "Support"
+                        "Development",
+                        "Staffing",
+                        "Support"
                         });
                 }
             }
 
-            // ================= SWITCH FLOW =================
+            // ================= FLOW =================
 
             switch (step)
             {
-                // ================= START =================
-
                 case "start":
 
                     UserSteps[sessionId] = "route";
@@ -193,16 +213,12 @@ namespace Pirnav.API.Services
                         "route",
                         new List<string>
                         {
-                            "Development",
-                            "Staffing",
-                            "Support"
+                        "Development",
+                        "Staffing",
+                        "Support"
                         });
 
-                // ================= ROUTE =================
-
                 case "route":
-
-                    // GREETINGS
 
                     if (lowerMessage == "hi" ||
                         lowerMessage == "hello" ||
@@ -215,9 +231,9 @@ namespace Pirnav.API.Services
                             "route",
                             new List<string>
                             {
-                                "Development",
-                                "Staffing",
-                                "Support"
+                            "Development",
+                            "Staffing",
+                            "Support"
                             });
                     }
 
@@ -236,11 +252,11 @@ namespace Pirnav.API.Services
                             "development_type",
                             new List<string>
                             {
-                                "Web Development",
-                                "Mobile App",
-                                "UI/UX Design",
-                                "Custom Software",
-                                "AI Solutions"
+                            "Web Development",
+                            "Mobile App",
+                            "UI/UX Design",
+                            "Custom Software",
+                            "AI Solutions"
                             });
                     }
 
@@ -263,8 +279,6 @@ namespace Pirnav.API.Services
 
                     if (lowerMessage.Contains("support"))
                     {
-                        UserSteps[sessionId] = "done";
-
                         return await BuildResponse(
                             sessionId,
                             message,
@@ -279,12 +293,10 @@ namespace Pirnav.API.Services
                         "route",
                         new List<string>
                         {
-                            "Development",
-                            "Staffing",
-                            "Support"
+                        "Development",
+                        "Staffing",
+                        "Support"
                         });
-
-                // ================= DEVELOPMENT TYPE =================
 
                 case "development_type":
 
@@ -300,13 +312,11 @@ namespace Pirnav.API.Services
                         "development_platform",
                         new List<string>
                         {
-                            "Web",
-                            "Android",
-                            "iOS",
-                            "Both"
+                        "Web",
+                        "Android",
+                        "iOS",
+                        "Both"
                         });
-
-                // ================= DEVELOPMENT PLATFORM =================
 
                 case "development_platform":
 
@@ -322,13 +332,11 @@ namespace Pirnav.API.Services
                         "development_timeline",
                         new List<string>
                         {
-                            "ASAP",
-                            "1 Month",
-                            "3 Months",
-                            "6+ Months"
+                        "ASAP",
+                        "1 Month",
+                        "3 Months",
+                        "6+ Months"
                         });
-
-                // ================= DEVELOPMENT TIMELINE =================
 
                 case "development_timeline":
 
@@ -342,8 +350,6 @@ namespace Pirnav.API.Services
                         message,
                         "Awesome 🚀 Please briefly explain your requirement.",
                         "development_requirement");
-
-                // ================= DEVELOPMENT DISCUSSION =================
 
                 case "development_requirement":
 
@@ -367,8 +373,6 @@ namespace Pirnav.API.Services
                         "Understood 👍 May I know your name?",
                         "name");
 
-                // ================= STAFFING DISCUSSION =================
-
                 case "staffing_requirement":
 
                     if (message.Length < 5)
@@ -391,8 +395,6 @@ namespace Pirnav.API.Services
                         "Perfect 👍 May I know your name?",
                         "name");
 
-                // ================= NAME =================
-
                 case "name":
 
                     if (message.Length < 3)
@@ -406,7 +408,7 @@ namespace Pirnav.API.Services
 
                     if (!Regex.IsMatch(
                         message,
-                        @"^[a-zA-Z\s]+$"))
+                        @"^[a-zA-Z\s\.\-']+$"))
                     {
                         return await BuildResponse(
                             sessionId,
@@ -425,13 +427,7 @@ namespace Pirnav.API.Services
                         "Thanks 😊 Please share your email address.",
                         "email");
 
-                // ================= EMAIL =================
-
                 case "email":
-
-                    message = message.Trim();
-
-                    // NO SPACES
 
                     if (message.Contains(" "))
                     {
@@ -441,8 +437,6 @@ namespace Pirnav.API.Services
                             "Email should not contain spaces.",
                             "email");
                     }
-
-                    // EMAIL FORMAT
 
                     bool isValidEmail = Regex.IsMatch(
                         message,
@@ -457,8 +451,6 @@ namespace Pirnav.API.Services
                             "email");
                     }
 
-                    // DOMAIN CHECK
-
                     var emailDomain = message
                         .Split('@')
                         .Last()
@@ -466,18 +458,18 @@ namespace Pirnav.API.Services
 
                     var blockedDomains = new[]
                     {
-                        "gmaill.com",
-                        "gmial.com",
-                        "gmal.com",
-                        "gmail.co",
-                        "gmail.comm",
-                        "gmail.cam",
-                        "gmail.cum",
-                        "gmail.con",
-                        "yaho.com",
-                        "outlok.com",
-                        "hotmial.com"
-                    };
+                    "gmaill.com",
+                    "gmial.com",
+                    "gmal.com",
+                    "gmail.co",
+                    "gmail.comm",
+                    "gmail.cam",
+                    "gmail.cum",
+                    "gmail.con",
+                    "yaho.com",
+                    "outlok.com",
+                    "hotmial.com"
+                };
 
                     if (blockedDomains.Contains(emailDomain))
                     {
@@ -488,18 +480,16 @@ namespace Pirnav.API.Services
                             "email");
                     }
 
-                    // VALID TLD
-
                     var validTlds = new[]
                     {
-                        ".com",
-                        ".org",
-                        ".net",
-                        ".in",
-                        ".co",
-                        ".io",
-                        ".ai"
-                    };
+                    ".com",
+                    ".org",
+                    ".net",
+                    ".in",
+                    ".co",
+                    ".io",
+                    ".ai"
+                };
 
                     bool hasValidTld =
                         validTlds.Any(
@@ -514,16 +504,13 @@ namespace Pirnav.API.Services
                             "email");
                     }
 
-                    // SAVE EMAIL
-
                     UserData[sessionId].Email = message;
-
-                    UserSteps[sessionId] = "done";
 
                     await SaveLead(UserData[sessionId]);
 
                     UserSteps.Remove(sessionId);
                     UserData.Remove(sessionId);
+                    SessionActivity.Remove(sessionId);
 
                     return await BuildResponse(
                         sessionId,
@@ -532,11 +519,9 @@ namespace Pirnav.API.Services
                         "done",
                         new List<string>
                         {
-                            "Restart",
-                            "Support"
+                        "Restart",
+                        "Support"
                         });
-
-                // ================= DEFAULT =================
 
                 default:
 
@@ -582,6 +567,8 @@ namespace Pirnav.API.Services
             var subject = "🚀 New Lead from Pirnav Chatbot";
 
             var body = $@"
+
+
 <h2>New Lead Received</h2>
 
 <p><b>Name:</b> {lead.Name}</p>
@@ -601,8 +588,9 @@ font-family:Segoe UI'>
 </div>
 ";
 
-            var hrEmail =
-                _configuration["EmailSettings:HrEmail"];
+
+        var hrEmail =
+            _configuration["EmailSettings:HrEmail"];
 
             if (!string.IsNullOrWhiteSpace(hrEmail))
             {
@@ -621,6 +609,28 @@ font-family:Segoe UI'>
             string botReply,
             string step)
         {
+            if (string.IsNullOrWhiteSpace(userMessage))
+                return;
+
+            var ignoredMessages = new[]
+            {
+            "hi",
+            "hello",
+            "hey",
+            "ok",
+            "thanks",
+            "thank you"
+        };
+
+            if (ignoredMessages.Contains(userMessage.ToLower()))
+                return;
+
+            if (userMessage.Length > 1000)
+                userMessage = userMessage.Substring(0, 1000);
+
+            if (botReply.Length > 2000)
+                botReply = botReply.Substring(0, 2000);
+
             var log = new ChatLog
             {
                 SessionId = sessionId,
@@ -635,4 +645,6 @@ font-family:Segoe UI'>
             await _context.SaveChangesAsync();
         }
     }
+
+
 }
