@@ -130,7 +130,7 @@ return(
 
 <p className="hero-sub srv-text-reveal srv-text-delay-2">
 We deliver cutting-edge digital solutions that help businesses innovate,
-scale faster, and stay ahead in todayâ€™s competitive technology landscape.
+scale faster, and stay ahead in today's competitive technology landscape.
 </p>
 
 <p className="hero-extra srv-text-reveal srv-text-delay-3">

@@ -142,7 +142,7 @@ function About() {
         <div className="about-intro-side">
           <div className="about-mini-note">
             <FaGlobeAsia aria-hidden="true" />
-            <span>India-based team with business-focused support</span>
+            <span>Pirnav team focused on practical business technology support</span>
           </div>
           <div className="about-mini-note">
             <FaUsers aria-hidden="true" />
