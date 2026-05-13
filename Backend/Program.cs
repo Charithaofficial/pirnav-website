@@ -13,7 +13,10 @@ using Pirnav.API.Validation;
 using System.Text;
 using System.Threading.RateLimiting;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 // =======================
 // DATABASE CONFIGURATION
@@ -37,11 +40,29 @@ builder.Services.AddCors(options =>
     {
         policy
             .SetIsOriginAllowed(_ => true)
+
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
     });
 });
+
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", policy =>
+//    {
+//        policy
+//        .WithOrigins(
+//        "https://pirnav.com",
+//        "https://www.pirnav.com"
+//        )
+//        .AllowAnyHeader()
+//        .AllowAnyMethod()
+//        .AllowCredentials();
+//    });
+//});
+
 
 // =======================
 // JWT AUTHENTICATION
@@ -90,6 +111,18 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddRateLimiter(options =>
 {
+    options.AddFixedWindowLimiter("chatLimiter", opt =>
+    {
+        opt.PermitLimit = 20;
+
+        opt.Window = TimeSpan.FromMinutes(1);
+
+        opt.QueueProcessingOrder =
+            QueueProcessingOrder.OldestFirst;
+
+        opt.QueueLimit = 2;
+    });
+
     options.AddFixedWindowLimiter("jobApplyLimiter", opt =>
     {
         opt.PermitLimit = 5;
@@ -230,19 +263,14 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// IMPORTANT
-// CORS MUST COME BEFORE AUTHENTICATION
+
 
 app.UseCors("AllowAll");
 
 app.UseStaticFiles();
 
 app.UseRateLimiter();
-
-// TEMPORARILY DISABLED
-// TO AVOID BLOCKING OPTIONS REQUESTS
-
-// app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 

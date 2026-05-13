@@ -1395,6 +1395,10 @@ body, html {
   border-collapse: collapse;
 }
 
+.applications-table {
+  table-layout: fixed;
+}
+
 .messages-table {
   table-layout: fixed;
 }
@@ -1476,6 +1480,34 @@ body, html {
   font-weight: 700;
 }
 
+.applications-table th:nth-child(1),
+.applications-table td:nth-child(1) {
+  width: 32%;
+}
+
+.applications-table th:nth-child(2),
+.applications-table td:nth-child(2) {
+  width: 22%;
+}
+
+.applications-table th:nth-child(3),
+.applications-table td:nth-child(3) {
+  width: 20%;
+  text-align: center;
+}
+
+.applications-table th:nth-child(4),
+.applications-table td:nth-child(4) {
+  width: 14%;
+  text-align: center;
+}
+
+.applications-table th:nth-child(5),
+.applications-table td:nth-child(5) {
+  width: 12%;
+  text-align: center;
+}
+
 .messages-table .status {
   justify-content: center;
   min-width: 84px;
@@ -1504,6 +1536,7 @@ body, html {
 .table-action-group {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 

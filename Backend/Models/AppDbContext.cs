@@ -27,6 +27,7 @@ public partial class AppDbContext : DbContext
     public DbSet<DemoRequest> DemoRequests { get; set; }
 
     public DbSet<InterviewFeedback> InterviewFeedbacks { get; set; }
+    public DbSet<ChatLog> ChatLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

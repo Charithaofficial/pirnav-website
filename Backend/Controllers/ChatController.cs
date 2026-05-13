@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Pirnav.API.Models;
 using Pirnav.API.Services;
 using System.Text.RegularExpressions;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 namespace Pirnav.API.Controllers
 {
     [ApiController]
+    [EnableRateLimiting("chatLimiter")]
     [Route("api/[controller]")]
     public class ChatController : ControllerBase
     {

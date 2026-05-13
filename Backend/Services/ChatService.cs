@@ -1,280 +1,638 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Pirnav.API.Models;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Pirnav.API.Services
 {
     public class ChatService
     {
         private readonly AppDbContext _context;
-
         private readonly EmailService _emailService;
-
         private readonly IConfiguration _configuration;
 
-        public ChatService(AppDbContext context, EmailService emailService, IConfiguration configuration)
+        public ChatService(
+            AppDbContext context,
+            EmailService emailService,
+            IConfiguration configuration)
         {
             _context = context;
             _emailService = emailService;
             _configuration = configuration;
         }
 
-        private static Dictionary<string, string> userSteps = new();
-        private static Dictionary<string, Lead> userData = new();
+        // ================= SESSION STORAGE =================
 
-        public async Task<ChatResponse> GetReply(string message, string sessionId)
+        private static readonly Dictionary<string, string> UserSteps = new();
+
+        private static readonly Dictionary<string, Lead> UserData = new();
+
+        // ================= FAQ RESPONSES =================
+
+        private static readonly Dictionary<string, string> FaqResponses = new()
         {
-            if (!userSteps.ContainsKey(sessionId))
-                userSteps[sessionId] = "start";
+            {
+                "services",
+                "We provide Web Development, Mobile App Development, UI/UX Design, Staffing Solutions, Cloud Solutions, AI Services, and Enterprise Software Development."
+            },
+            {
+                "company",
+                "Pirnav Software Solutions Pvt Ltd delivers innovative software and staffing solutions for global businesses."
+            },
+            {
+                "location",
+                "Pirnav operates across India, USA, UK, and Canada."
+            },
+            {
+                "careers",
+                "You can explore opportunities through our Careers page or connect with our HR team."
+            },
+            {
+                "contact",
+                "You can reach our team anytime at hr@pirnav.com"
+            },
+            {
+                "technologies",
+                "We work with .NET, React, Angular, Node.js, Flutter, Azure, AWS, SQL, AI/ML, and enterprise cloud technologies."
+            }
+        };
 
-            if (!userData.ContainsKey(sessionId))
-                userData[sessionId] = new Lead();
+        // ================= MAIN METHOD =================
 
-            var step = userSteps[sessionId];
+        public async Task<ChatResponse> GetReply(
+            string message,
+            string sessionId)
+        {
+            // ================= SESSION VALIDATION =================
+
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                return await BuildResponse(
+                    "system",
+                    "system",
+                    "Session expired. Please restart the chat.",
+                    "done");
+            }
+
+            // ================= MESSAGE VALIDATION =================
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return await BuildResponse(
+                    sessionId,
+                    "empty",
+                    "Please enter a valid message.",
+                    "done");
+            }
+
+            message = message.Trim();
+
+            // ================= ANTI-SPAM / SECURITY =================
+
+            if (Regex.IsMatch(
+                message,
+                @"(<script>|</script>|SELECT |DROP TABLE|INSERT INTO|DELETE FROM|UPDATE )",
+                RegexOptions.IgnoreCase))
+            {
+                return await BuildResponse(
+                    sessionId,
+                    message,
+                    "Invalid input detected.",
+                    "done");
+            }
+
+            // ================= SESSION INIT =================
+
+            if (!UserSteps.ContainsKey(sessionId))
+                UserSteps[sessionId] = "start";
+
+            if (!UserData.ContainsKey(sessionId))
+                UserData[sessionId] = new Lead();
+
+            var step = UserSteps[sessionId];
+
+            var lowerMessage = message.ToLower();
+
+            // ================= RESTART =================
+
+            if (lowerMessage == "restart" ||
+                lowerMessage == "start again")
+            {
+                UserSteps[sessionId] = "start";
+
+                UserData[sessionId] = new Lead();
+
+                return await BuildResponse(
+                    sessionId,
+                    message,
+                    "Chat restarted successfully 😊",
+                    "route",
+                    new List<string>
+                    {
+                        "Development",
+                        "Staffing",
+                        "Support"
+                    });
+            }
+
+            // ================= BACK =================
+
+            if (lowerMessage == "back")
+            {
+                UserSteps[sessionId] = "route";
+
+                return await BuildResponse(
+                    sessionId,
+                    message,
+                    "Please choose an option again.",
+                    "route",
+                    new List<string>
+                    {
+                        "Development",
+                        "Staffing",
+                        "Support"
+                    });
+            }
+
+            // ================= FAQ ENGINE =================
+
+            foreach (var faq in FaqResponses)
+            {
+                if (lowerMessage.Contains(faq.Key))
+                {
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        faq.Value,
+                        "route",
+                        new List<string>
+                        {
+                            "Development",
+                            "Staffing",
+                            "Support"
+                        });
+                }
+            }
+
+            // ================= SWITCH FLOW =================
 
             switch (step)
             {
+                // ================= START =================
+
                 case "start":
-                    userSteps[sessionId] = "route";
 
-                    return new ChatResponse
-                    {
-                        Reply = "Hi 👋 Welcome to Pirnav! Please choose an option:",
-                        Suggestions = new List<string>
-        {
-            "Development",
-            "Staffing",
-            "Support"
-        },
-                        Step = "route"
-                    };
+                    UserSteps[sessionId] = "route";
 
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Hi 👋 Welcome to Pirnav! Please choose an option:",
+                        "route",
+                        new List<string>
+                        {
+                            "Development",
+                            "Staffing",
+                            "Support"
+                        });
+
+                // ================= ROUTE =================
 
                 case "route":
 
-                    var msg = message.ToLower();
+                    // GREETINGS
 
-                    // ================= DEVELOPMENT FLOW =================
-
-                    if (msg.Contains("development"))
+                    if (lowerMessage == "hi" ||
+                        lowerMessage == "hello" ||
+                        lowerMessage == "hey")
                     {
-                        userData[sessionId].Requirement = "Development";
-
-                        userSteps[sessionId] = "development_type";
-
-                        return new ChatResponse
-                        {
-                            Reply = "Great 👍 What type of development service are you looking for?",
-                            Suggestions = new List<string>
-            {
-                "Web Development",
-                "Mobile App",
-                "UI/UX Design",
-                "Custom Software",
-                "Other"
-            },
-                            Step = "development_type"
-                        };
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Hello 👋 How can we assist you today?",
+                            "route",
+                            new List<string>
+                            {
+                                "Development",
+                                "Staffing",
+                                "Support"
+                            });
                     }
 
-                    // ================= STAFFING FLOW =================
+                    // DEVELOPMENT
 
-                    if (msg.Contains("staffing"))
+                    if (lowerMessage.Contains("development"))
                     {
-                        userData[sessionId].Requirement = "Staffing";
+                        UserData[sessionId].Requirement = "Development";
 
-                        userSteps[sessionId] = "staffing_requirement";
+                        UserSteps[sessionId] = "development_type";
 
-                        return new ChatResponse
-                        {
-                            Reply = "Great 👍 Please share your staffing requirement.",
-                            Suggestions = new List<string>(),
-                            Step = "staffing_requirement"
-                        };
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Excellent 👍 What type of development service are you looking for?",
+                            "development_type",
+                            new List<string>
+                            {
+                                "Web Development",
+                                "Mobile App",
+                                "UI/UX Design",
+                                "Custom Software",
+                                "AI Solutions"
+                            });
                     }
 
-                    // ================= SUPPORT FLOW =================
+                    // STAFFING
 
-                    if (msg.Contains("support"))
+                    if (lowerMessage.Contains("staffing"))
                     {
-                        userSteps[sessionId] = "done";
+                        UserData[sessionId].Requirement = "Staffing";
 
-                        return new ChatResponse
-                        {
-                            Reply = "Our support team will contact you shortly.\n\nYou can also reach us at hr@pirnav.com",
-                            Suggestions = new List<string>(),
-                            Step = "done"
-                        };
+                        UserSteps[sessionId] = "staffing_requirement";
+
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Great 👍 Please share your staffing requirement.",
+                            "staffing_requirement");
                     }
 
-                    return new ChatResponse
+                    // SUPPORT
+
+                    if (lowerMessage.Contains("support"))
                     {
-                        Reply = "Please choose a valid option.",
-                        Suggestions = new List<string>
-        {
-            "Development",
-            "Staffing",
-            "Support"
-        },
-                        Step = "route"
-                    };
+                        UserSteps[sessionId] = "done";
+
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Our support team will contact you shortly.\n\nYou can also reach us at hr@pirnav.com",
+                            "done");
+                    }
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Please choose a valid option.",
+                        "route",
+                        new List<string>
+                        {
+                            "Development",
+                            "Staffing",
+                            "Support"
+                        });
+
+                // ================= DEVELOPMENT TYPE =================
 
                 case "development_type":
 
-                    userData[sessionId].Requirement +=
+                    UserData[sessionId].Requirement +=
                         $"\nService Type: {message}";
 
-                    userSteps[sessionId] = "development_requirement";
+                    UserSteps[sessionId] = "development_platform";
 
-                    return new ChatResponse
-                    {
-                        Reply = "Awesome 🚀 Please briefly describe your requirement.",
-                        Suggestions = new List<string>(),
-                        Step = "development_requirement"
-                    };
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Perfect 🚀 Which platform do you need?",
+                        "development_platform",
+                        new List<string>
+                        {
+                            "Web",
+                            "Android",
+                            "iOS",
+                            "Both"
+                        });
+
+                // ================= DEVELOPMENT PLATFORM =================
+
+                case "development_platform":
+
+                    UserData[sessionId].Requirement +=
+                        $"\nPlatform: {message}";
+
+                    UserSteps[sessionId] = "development_timeline";
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Great 👍 What is your expected project timeline?",
+                        "development_timeline",
+                        new List<string>
+                        {
+                            "ASAP",
+                            "1 Month",
+                            "3 Months",
+                            "6+ Months"
+                        });
+
+                // ================= DEVELOPMENT TIMELINE =================
+
+                case "development_timeline":
+
+                    UserData[sessionId].Requirement +=
+                        $"\nTimeline: {message}";
+
+                    UserSteps[sessionId] = "development_requirement";
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Awesome 🚀 Please briefly explain your requirement.",
+                        "development_requirement");
+
+                // ================= DEVELOPMENT DISCUSSION =================
 
                 case "development_requirement":
 
-                    userData[sessionId].Requirement +=
+                    if (message.Length < 5)
+                    {
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please briefly explain your requirement.",
+                            "development_requirement");
+                    }
+
+                    UserData[sessionId].Requirement +=
                         $"\nDiscussion: {message}";
 
-                    userSteps[sessionId] = "name";
+                    UserSteps[sessionId] = "name";
 
-                    return new ChatResponse
-                    {
-                        Reply = "Got it 👍 May I know your name?",
-                        Suggestions = new List<string>(),
-                        Step = "name"
-                    };
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Understood 👍 May I know your name?",
+                        "name");
+
+                // ================= STAFFING DISCUSSION =================
 
                 case "staffing_requirement":
 
-                    userData[sessionId].Requirement +=
-                        $"\nRequirement Details: {message}";
-
-                    userSteps[sessionId] = "name";
-
-                    return new ChatResponse
+                    if (message.Length < 5)
                     {
-                        Reply = "Thanks 👍 May I know your name?",
-                        Suggestions = new List<string>(),
-                        Step = "name"
-                    };
-            
-
-                case "name":
-                    if (message.Length < 3)
-                    {
-                        return new ChatResponse
-                        {
-                            Reply = "Please enter a valid name.",
-                            Step = "name"
-                        };
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please share proper staffing requirement details.",
+                            "staffing_requirement");
                     }
 
-                    userData[sessionId].Name = message;
+                    UserData[sessionId].Requirement +=
+                        $"\nRequirement Details: {message}";
 
-                    userSteps[sessionId] = "email";
+                    UserSteps[sessionId] = "name";
 
-                return new ChatResponse
-                {
-                    Reply = "Thanks 😊 Please share your email.",
-                    Step = "email"
-                };
-
-            case "email":
-
-                // ================= EMAIL FORMAT VALIDATION =================
-
-                bool isValidEmail =
-                    System.Text.RegularExpressions.Regex.IsMatch(
+                    return await BuildResponse(
+                        sessionId,
                         message,
-                        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    );
+                        "Perfect 👍 May I know your name?",
+                        "name");
 
-                if (!isValidEmail)
-                {
-                    return new ChatResponse
+                // ================= NAME =================
+
+                case "name":
+
+                    if (message.Length < 3)
                     {
-                        Reply = "Please enter a valid email address.",
-                        Step = "email"
-                    };
-                }
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please enter a valid name.",
+                            "name");
+                    }
 
-                // ================= DOMAIN VALIDATION =================
-
-                if (!IsValidEmailDomain(message))
-                {
-                    return new ChatResponse
+                    if (!Regex.IsMatch(
+                        message,
+                        @"^[a-zA-Z\s]+$"))
                     {
-                        Reply = "Please enter a valid email domain.",
-                        Step = "email"
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Name should contain only letters.",
+                            "name");
+                    }
+
+                    UserData[sessionId].Name = message;
+
+                    UserSteps[sessionId] = "email";
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "Thanks 😊 Please share your email address.",
+                        "email");
+
+                // ================= EMAIL =================
+
+                case "email":
+
+                    message = message.Trim();
+
+                    // NO SPACES
+
+                    if (message.Contains(" "))
+                    {
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Email should not contain spaces.",
+                            "email");
+                    }
+
+                    // EMAIL FORMAT
+
+                    bool isValidEmail = Regex.IsMatch(
+                        message,
+                        @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$");
+
+                    if (!isValidEmail)
+                    {
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please enter a valid email address.",
+                            "email");
+                    }
+
+                    // DOMAIN CHECK
+
+                    var emailDomain = message
+                        .Split('@')
+                        .Last()
+                        .ToLower();
+
+                    var blockedDomains = new[]
+                    {
+                        "gmaill.com",
+                        "gmial.com",
+                        "gmal.com",
+                        "gmail.co",
+                        "gmail.comm",
+                        "gmail.cam",
+                        "gmail.cum",
+                        "gmail.con",
+                        "yaho.com",
+                        "outlok.com",
+                        "hotmial.com"
                     };
-                }
 
-                userData[sessionId].Email = message;
+                    if (blockedDomains.Contains(emailDomain))
+                    {
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please enter a valid email domain.",
+                            "email");
+                    }
 
-                userSteps[sessionId] = "done";
+                    // VALID TLD
 
-                await SaveLead(userData[sessionId]);
+                    var validTlds = new[]
+                    {
+                        ".com",
+                        ".org",
+                        ".net",
+                        ".in",
+                        ".co",
+                        ".io",
+                        ".ai"
+                    };
 
-                return new ChatResponse
-                {
-                    Reply = "🎉 Thank you! Our team will contact you soon.\n\nFor quick assistance, you can also reach us at hr@pirnav.com",
-                    Step = "done"
-                };
-            default:
-                return new ChatResponse
-                {
-                    Reply = "How else can I help you?",
-                    Step = "done"
-                };
+                    bool hasValidTld =
+                        validTlds.Any(
+                            tld => emailDomain.EndsWith(tld));
+
+                    if (!hasValidTld)
+                    {
+                        return await BuildResponse(
+                            sessionId,
+                            message,
+                            "Please enter a valid email domain.",
+                            "email");
+                    }
+
+                    // SAVE EMAIL
+
+                    UserData[sessionId].Email = message;
+
+                    UserSteps[sessionId] = "done";
+
+                    await SaveLead(UserData[sessionId]);
+
+                    UserSteps.Remove(sessionId);
+                    UserData.Remove(sessionId);
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "🎉 Thank you! Our team will contact you soon.\n\nFor quick assistance, you can also reach us at hr@pirnav.com",
+                        "done",
+                        new List<string>
+                        {
+                            "Restart",
+                            "Support"
+                        });
+
+                // ================= DEFAULT =================
+
+                default:
+
+                    return await BuildResponse(
+                        sessionId,
+                        message,
+                        "How else can I help you?",
+                        "done");
             }
         }
+
+        // ================= BUILD RESPONSE =================
+
+        private async Task<ChatResponse> BuildResponse(
+            string sessionId,
+            string userMessage,
+            string reply,
+            string step,
+            List<string>? suggestions = null)
+        {
+            await SaveChatLog(
+                sessionId,
+                userMessage,
+                reply,
+                step);
+
+            return new ChatResponse
+            {
+                Reply = reply,
+                Step = step,
+                Suggestions = suggestions ?? new List<string>()
+            };
+        }
+
+        // ================= SAVE LEAD =================
 
         private async Task SaveLead(Lead lead)
         {
             _context.Leads.Add(lead);
+
             await _context.SaveChangesAsync();
 
             var subject = "🚀 New Lead from Pirnav Chatbot";
 
             var body = $@"
-        <h3>New Lead Received</h3>
-        <p><b>Name:</b> {lead.Name}</p>
-        <p><b>Email:</b> {lead.Email}</p>
-        <p><b>Discussion Details:</b></p>
+<h2>New Lead Received</h2>
 
-<div style='padding:10px;background:#f5f5f5;
-border-radius:6px;line-height:1.6'>
+<p><b>Name:</b> {lead.Name}</p>
+
+<p><b>Email:</b> {lead.Email}</p>
+
+<p><b>Discussion Details:</b></p>
+
+<div style='padding:15px;
+background:#f5f5f5;
+border-radius:8px;
+line-height:1.8;
+font-family:Segoe UI'>
+
 {lead.Requirement?.Replace("\n", "<br/>")}
+
 </div>
-    ";
+";
 
-            var hrEmail = _configuration["EmailSettings:HrEmail"];
+            var hrEmail =
+                _configuration["EmailSettings:HrEmail"];
 
-            await _emailService.SendEmailAsync(
-                hrEmail,
-                subject,
-                body
-            );
+            if (!string.IsNullOrWhiteSpace(hrEmail))
+            {
+                await _emailService.SendEmailAsync(
+                    hrEmail,
+                    subject,
+                    body);
+            }
         }
 
+        // ================= SAVE CHAT LOG =================
 
-        private bool IsValidEmailDomain(string email)
+        private async Task SaveChatLog(
+            string sessionId,
+            string userMessage,
+            string botReply,
+            string step)
         {
-            try
+            var log = new ChatLog
             {
-                var domain = email.Split('@').Last();
+                SessionId = sessionId,
+                UserMessage = userMessage,
+                BotReply = botReply,
+                Step = step,
+                CreatedDate = DateTime.UtcNow
+            };
 
-                return System.Net.Dns
-                    .GetHostEntry(domain) != null;
-            }
-            catch
-            {
-                return false;
-            }
+            _context.ChatLogs.Add(log);
+
+            await _context.SaveChangesAsync();
         }
     }
 }
