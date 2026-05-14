@@ -5,6 +5,7 @@ import {
   Eye,
   Clock,
   Bookmark,
+  X,
   XCircle,
   CircleDot,
   Trash2,
@@ -288,6 +289,14 @@ const Applications = () => {
       {selected && (
 <div className="modal-overlay">
 <div className="modal application-view-modal">
+<button
+  type="button"
+  className="modal-close-icon"
+  onClick={closeModal}
+  aria-label="Close candidate details"
+>
+  <X size={18} />
+</button>
 <h3>Candidate Details</h3>
             <div className="application-view-card">
               <div className="application-view-row">

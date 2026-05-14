@@ -71,7 +71,7 @@ function AdminSidebar({ collapsed, mobileOpen, onToggle, onClose }) {
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-expanded={!collapsed}
           >
-            {mobileOpen ? <X size={22} /> : <Menu size={23} />}
+            {mobileOpen ? <X size={20} /> : <Menu size={21} />}
           </button>
         </div>
 
@@ -88,7 +88,7 @@ function AdminSidebar({ collapsed, mobileOpen, onToggle, onClose }) {
                 onClick={onClose}
                 title={collapsed ? item.label : undefined}
               >
-                <Icon size={21} aria-hidden="true" />
+                <Icon size={19} aria-hidden="true" />
                 <span>{item.label}</span>
               </NavLink>
             );
