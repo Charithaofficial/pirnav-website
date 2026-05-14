@@ -328,8 +328,7 @@ return(
 <div className="admin-users-page">
 
 <div className="page-header">
-<h2>Admin Users</h2>
-<p>Create and manage admin accounts</p>
+<h1>Admin Users</h1>
 </div>
 
 <div className="admin-users-grid">

@@ -7,6 +7,7 @@ html, body {
   --admin-sidebar-width: 188px;
   --admin-sidebar-collapsed-width: 68px;
   --admin-topbar-height: 78px;
+  --admin-page-heading-size: 32px;
   min-height: 100vh;
   background: #f6f8fb;
   color: #0f1f35;
@@ -164,7 +165,7 @@ html, body {
 .admin-main {
   min-height: 100vh;
   margin-left: var(--admin-sidebar-width);
-  padding: calc(var(--admin-topbar-height) + 30px) 36px 32px;
+  padding: calc(var(--admin-topbar-height) + 16px) 36px 32px;
   transition: margin-left 260ms ease;
 }
 
@@ -468,16 +469,25 @@ html, body {
 
 .dashboard-header {
   display: block;
+  margin-bottom: 12px;
 }
 
 .page-header {
   display: none;
 }
 
-.dashboard-header h1 {
+.dashboard-header h1,
+.messages-header h1,
+.jobs-header h1,
+.applications-header h1,
+.services-header h1,
+.admin-users-page .page-header h1,
+.interview-feedback-header h1,
+.interviews-module-header h1,
+.admin-info-header h1 {
   margin: 0;
-  font-size: clamp(1.7rem, 2.4vw, 2.2rem);
-  line-height: 1.05;
+  font-size: var(--admin-page-heading-size);
+  line-height: 1.1;
   color: #102238;
   font-weight: 800;
   letter-spacing: 0;
@@ -768,14 +778,15 @@ html, body {
 }
 
 .admin-info-page {
-  max-width: 980px;
+  max-width: 860px;
+  margin: 18px auto 0;
 }
 
 .admin-info-card {
   position: relative;
   overflow: hidden;
   padding: 0;
-  border-radius: 20px;
+  border-radius: 16px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 252, 0.98));
   border: 1px solid rgba(218, 228, 238, 0.95);
@@ -793,51 +804,44 @@ html, body {
 .admin-info-header {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 34px 34px 28px;
+  gap: 14px;
+  padding: 22px 24px 18px;
   border-bottom: 1px solid #edf1f5;
 }
 
 .admin-info-icon {
-  width: 58px;
-  height: 58px;
+  width: 46px;
+  height: 46px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 58px;
-  border-radius: 16px;
+  flex: 0 0 46px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0b7286, #12a1b7);
   color: #ffffff;
 }
 
-.admin-info-header h1 {
-  margin: 0;
-  color: #102238;
-  font-size: clamp(1.7rem, 2.4vw, 2.2rem);
-  line-height: 1.1;
-}
-
 .admin-info-header p {
-  margin: 8px 0 0;
+  margin: 5px 0 0;
   color: #64748b;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .admin-info-form {
   display: grid;
-  gap: 26px;
-  padding: 30px 34px 34px;
+  gap: 18px;
+  padding: 22px 24px 24px;
 }
 
 .admin-info-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
 .admin-info-field {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -861,8 +865,8 @@ html, body {
   background: #ffffff;
   color: #102238;
   font: inherit;
-  font-size: 0.98rem;
-  padding: 14px 15px;
+  font-size: 0.94rem;
+  padding: 11px 13px;
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
@@ -905,7 +909,7 @@ html, body {
 
 .admin-info-field textarea {
   resize: vertical;
-  min-height: 130px;
+  min-height: 96px;
 }
 
 .admin-info-field input:focus,
@@ -933,8 +937,8 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding-top: 20px;
+  gap: 12px;
+  padding-top: 14px;
   border-top: 1px solid #edf1f5;
 }
 
@@ -948,12 +952,12 @@ html, body {
 }
 
 .admin-info-actions button {
-  min-height: 46px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 9px;
-  padding: 0 20px;
+  padding: 0 16px;
   border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, #0b7286, #20b8ce);
@@ -1315,7 +1319,8 @@ body, html {
 
 .messages-wrapper,
 .jobs-wrapper,
-.applications-wrapper {
+.applications-wrapper,
+.services-wrapper {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1324,18 +1329,23 @@ body, html {
 
 .messages-header,
 .jobs-header,
-.applications-header {
+.applications-header,
+.services-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.messages-header,
-.jobs-header {
-  justify-content: flex-end;
+  margin-bottom: 4px;
 }
 
 .jobs-header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.jobs-header-controls {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
@@ -1344,14 +1354,6 @@ body, html {
 .jobs-header .search-box {
   width: min(520px, 100%);
   flex: 0 1 520px;
-}
-
-.messages-header h1,
-.jobs-header h1,
-.applications-header h1,
-.interview-feedback-header h1,
-.interviews-module-header h1 {
-  display: none;
 }
 
 .unread-badge {
@@ -1681,7 +1683,16 @@ body, html {
 
 .application-view-modal {
   position: relative;
-  padding-top: 38px;
+  width: min(430px, calc(100vw - 48px));
+  max-height: calc(100vh - 32px);
+  padding: 34px 18px 18px;
+  gap: 8px;
+  overflow: visible;
+}
+
+.application-view-modal h3 {
+  margin: 0;
+  font-size: 18px;
 }
 
 .modal-close-icon {
@@ -1879,11 +1890,13 @@ body, html {
 .application-modal-actions {
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .application-modal-secondary-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .reply-btn,
@@ -2218,6 +2231,10 @@ body, html {
     align-items: stretch;
   }
 
+  .jobs-header-controls {
+    align-items: stretch;
+  }
+
   .jobs-header .job-post-btn {
     justify-content: center;
     width: 100%;
@@ -2243,10 +2260,10 @@ body, html {
 }
 
 .application-view-card {
-  margin-top: 18px;
-  padding: 18px;
+  margin-top: 10px;
+  padding: 14px 16px;
   border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 12px;
   background: #f8fafc;
 }
 
@@ -2254,13 +2271,13 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 16px;
-  padding: 12px 0;
+  gap: 12px;
+  padding: 8px 0;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .application-view-row span:first-child {
-  min-width: 170px;
+  min-width: 158px;
   color: #475569;
   font-weight: 500;
 }
@@ -2284,13 +2301,13 @@ body, html {
 
 .application-view-actions,
 .status-actions {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .resume-btn {
-  min-width: 160px;
-  min-height: 46px;
-  padding: 0 18px;
+  min-width: 150px;
+  min-height: 40px;
+  padding: 0 16px;
   border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
@@ -2301,17 +2318,17 @@ body, html {
 
 .status-dropdown-label {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
   color: #334155;
   font-size: 14px;
   font-weight: 600;
 }
 
 .status-dropdown-label select {
-  max-width: 240px;
-  min-height: 44px;
-  padding: 10px 12px;
+  max-width: 190px;
+  min-height: 38px;
+  padding: 8px 10px;
   border-radius: 10px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
@@ -2322,15 +2339,25 @@ body, html {
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  padding: 24px;
+  padding: 0;
   background: #f4f6fb;
   min-height: calc(100vh - var(--admin-topbar-height, 78px));
   overflow-x: hidden;
 }
 
+.admin-users-page .page-header {
+  display: block;
+  margin-bottom: 20px;
+}
+
+.page-header h1,
 .page-header h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: var(--admin-page-heading-size);
+  line-height: 1.1;
+  color: #102238;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .page-header p {
@@ -2551,7 +2578,8 @@ th {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  padding: 4px 6px 0;
+  padding: 0;
+  margin-bottom: 20px;
 }
 
 .interview-feedback-kicker {
@@ -2571,8 +2599,11 @@ th {
 
 .interview-feedback-header h1 {
   margin: 0;
-  color: #102a43;
-  font-size: 34px;
+  color: #102238;
+  font-size: var(--admin-page-heading-size);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .interview-feedback-header p {
@@ -2928,7 +2959,7 @@ th {
 
 .interviews-module-header {
   flex: 0 0 auto;
-  margin: 0 0 8px;
+  margin: 0 0 20px;
 }
 
 .interviews-module-header span {
@@ -2947,10 +2978,11 @@ th {
 
 .interviews-module-header h1 {
   margin: 0;
-  color: #102a43;
-  font-size: 23px;
+  color: #102238;
+  font-size: var(--admin-page-heading-size);
   line-height: 1.1;
-  letter-spacing: -0.04em;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .interviews-shell {
@@ -3613,7 +3645,7 @@ th {
     grid-template-columns: 1fr;
   }
 
-  .interview-feedback-header h1 {
-    font-size: 28px;
+  .admin-container {
+    --admin-page-heading-size: 28px;
   }
 }

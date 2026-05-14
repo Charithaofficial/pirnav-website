@@ -14,18 +14,37 @@ namespace Pirnav.API.Services
             _configuration = configuration;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string body)
+        public async Task SendEmailAsync(
+    string toEmail,
+    string subject,
+    string body,
+    string? customSenderEmail = null,
+    string? customSenderName = null,
+    string? customPassword = null)
         {
             try
             {
+                var senderEmail =
+                    customSenderEmail ??
+                    _configuration["EmailSettings:SenderEmail"];
+
+                var senderName =
+                    customSenderName ??
+                    _configuration["EmailSettings:SenderName"];
+
+                var senderPassword =
+                    customPassword ??
+                    _configuration["EmailSettings:Password"];
+
                 var message = new MimeMessage();
 
                 message.From.Add(new MailboxAddress(
-                    _configuration["EmailSettings:SenderName"],
-                    _configuration["EmailSettings:SenderEmail"]
+                    senderName,
+                    senderEmail
                 ));
 
                 message.To.Add(new MailboxAddress("", toEmail.Trim()));
+
                 message.Subject = subject;
 
                 message.Body = new TextPart("html")
@@ -35,8 +54,6 @@ namespace Pirnav.API.Services
 
                 using var client = new SmtpClient();
 
-                //client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-
                 await client.ConnectAsync(
                     _configuration["EmailSettings:SmtpServer"],
                     int.Parse(_configuration["EmailSettings:Port"]),
@@ -44,14 +61,13 @@ namespace Pirnav.API.Services
                 );
 
                 await client.AuthenticateAsync(
-                    _configuration["EmailSettings:SenderEmail"],
-                    _configuration["EmailSettings:Password"]
+                    senderEmail,
+                    senderPassword
                 );
 
                 await client.SendAsync(message);
-                await client.DisconnectAsync(true);
 
-                Console.WriteLine($"Email sent successfully to {toEmail}");
+                await client.DisconnectAsync(true);
             }
             catch (Exception ex)
             {

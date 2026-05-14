@@ -207,7 +207,14 @@ Regards,<br/>
             var hrEmail = _config["EmailSettings:HrEmail"];
             if (!string.IsNullOrEmpty(hrEmail))
             {
-                await _emailService.SendEmailAsync(hrEmail, hrSubject, hrBody);
+                await _emailService.SendEmailAsync(
+    hrEmail,
+    hrSubject,
+    hrBody,
+    _config["ContactEmailSettings:SenderEmail"],
+    _config["ContactEmailSettings:SenderName"],
+    _config["ContactEmailSettings:Password"]
+);
             }
 
             // ================= USER EMAIL =================
@@ -265,7 +272,14 @@ Warm regards,<br/>
 
             if (!string.IsNullOrEmpty(model.Email))
             {
-                await _emailService.SendEmailAsync(model.Email, userSubject, userBody);
+                await _emailService.SendEmailAsync(
+    model.Email,
+    userSubject,
+    userBody,
+    _config["ContactEmailSettings:SenderEmail"],
+    _config["ContactEmailSettings:SenderName"],
+    _config["ContactEmailSettings:Password"]
+);
             }
 
             return Ok(new

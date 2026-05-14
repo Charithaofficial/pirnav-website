@@ -255,7 +255,7 @@ function AdminInfoPage({ type }) {
       <div className="admin-info-card">
         <div className="admin-info-header">
           <span className="admin-info-icon">
-            <Icon size={26} aria-hidden="true" />
+            <Icon size={22} aria-hidden="true" />
           </span>
           <div>
             <h1>{content.title}</h1>

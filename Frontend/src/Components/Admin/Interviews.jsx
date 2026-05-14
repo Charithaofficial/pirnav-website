@@ -284,29 +284,14 @@ const Interviews = () => {
   return (
     <div
       style={{
-        padding: "28px",
+        padding: "0 0 16px",
         background: "linear-gradient(180deg, #f7fbff 0%, #eef5fb 100%)",
         minHeight: "100vh",
       }}
     >
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        <div style={{ marginBottom: "24px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              padding: "7px 12px",
-              borderRadius: "999px",
-              background: "#dbeafe",
-              color: "#1d4ed8",
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "12px",
-            }}
-          >
-            Interview Workflow
-          </div>
+        <div className="interviews-module-header">
+          <h1>Interviews</h1>
         </div>
 
         <div

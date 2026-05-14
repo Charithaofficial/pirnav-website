@@ -61,3 +61,4 @@ wwwroot\resumes\f5642b34-11da-4e93-8c1b-981032dd60dd.pdf
 wwwroot\resumes\ff27a9af-06b3-496f-bfb8-be524570cc1f.docx
 wwwroot\resumes\ffc1ee33-ecb1-44b2-84b6-d043b325d7cf.pdf
 wwwroot\uploads\profile\e462389e-a95c-4c1f-82f8-c1a25fa6cf05.jpg
+wwwroot\resumes\03b3b7a2-c1dd-44d0-a2e2-84d13d562536.pdf

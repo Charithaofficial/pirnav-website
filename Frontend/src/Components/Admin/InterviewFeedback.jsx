@@ -232,7 +232,6 @@ const InterviewFeedback = () => {
     <div className="interview-feedback-page">
       <div className="interview-feedback-header">
         <div>
-          <span className="interview-feedback-kicker">Interview Review</span>
           <h1>Interview Feedback</h1>
         </div>
       </div>

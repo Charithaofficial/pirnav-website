@@ -327,17 +327,19 @@ const AdminJobs = () => {
     <div className="jobs-wrapper">
       <div className="jobs-header">
         <h1>Jobs</h1>
-        <div className="search-box">
-          <Search size={16} />
-          <input
-            placeholder="Search jobs..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="jobs-header-controls">
+          <div className="search-box">
+            <Search size={16} />
+            <input
+              placeholder="Search jobs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <button className="add-btn job-post-btn" onClick={openCreate}>
+            <Plus size={16} /> Post New Job
+          </button>
         </div>
-        <button className="add-btn job-post-btn" onClick={openCreate}>
-          <Plus size={16} /> Post New Job
-        </button>
       </div>
 
       {loading && <p>Loading...</p>}
