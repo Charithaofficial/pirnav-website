@@ -1423,6 +1423,11 @@ body, html {
 }
 
 .messages-table th:nth-child(1),
+.messages-table th:nth-child(2) {
+  text-align: left;
+}
+
+.messages-table th:nth-child(1),
 .messages-table td:nth-child(1) {
   width: 30%;
 }
